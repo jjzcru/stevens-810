@@ -21,11 +21,16 @@ def main():
     """Main program function"""
     clear_screen()
     player_move = get_player_move()
-    start_game(player_move)
-    print("END!!!!!")
+    score_board = {
+        'wins': 0,
+        'losses': 0,
+        'ties': 0,
+    }
+    start_game(player_move, score_board)
+    display_score_board(score_board)
 
 
-def start_game(player_move: str) -> None:
+def start_game(player_move: str, score_board: dict) -> None:
     """Start a new game depending on the player move"""
 
     # If the move was 'q' exit the game
@@ -40,8 +45,17 @@ def start_game(player_move: str) -> None:
         "computer_move": computer_move,
         "player_move": player_move,
     })
+    print()
 
-    return start_game(get_player_move())
+    # Add the result to the score board
+    if result == 0:
+        score_board['ties'] += 1
+    elif result == 1:
+        score_board['wins'] += 1
+    else:
+        score_board['losses'] += 1
+
+    return start_game(get_player_move(), score_board)
 
 
 def get_player_move() -> str:
@@ -88,36 +102,79 @@ def get_game_result(player_move: str, computer_move: str) -> int:
     return -1
 
 
-def display_game_result(result: dict) -> None:
+def display_game_result(game_result: dict) -> None:
     """Prints the game result"""
-    player_move = result['player_move']
-    computer_move = result['computer_move']
+    result = game_result['result']
+    player_move = game_result['player_move']
+    computer_move = game_result['computer_move']
+
+    if result == 0:
+        print('Tie: We both chose {move}'.format(move=get_move_symbol(player_move)))
+        return
+
     message: str = get_message(player_move, computer_move)
 
-    print(result)
+    if result == 1:
+        print(f'{message} - You Win!')
+        return
+
+    print(f'{message} - I Win!')
+
+
+def display_score_board(score_board: dict) -> None:
+    """Receives the score board and prints the result"""
+    total_wins = score_board['wins']
+    total_losses = score_board['losses']
+    total_ties = score_board['ties']
+
+    games_played = total_wins + total_losses + total_ties
+    if games_played == 0:
+        print(f"You didn't played at all ☹️")
+        return
+
+    wins_percentage = round((total_wins * 100) / games_played, 2)
+    losses_percentage = round((total_losses * 100) / games_played, 2)
+    ties_percentage = round((total_ties * 100) / games_played, 2)
+
+    clear_screen()
+    print(f"Games Played: {games_played}\n")
+    print('------------------------------------')
+    print(f"Wins Percentage: {wins_percentage}%")
+    print(f"Losses Percentage: {losses_percentage}%")
+    print(f"Ties Percentage: {ties_percentage}%")
+    print('------------------------------------')
+    print(f'Total of Wins: {total_wins}')
+    print(f'Total of Losses: {total_losses}')
+    print(f'Total of Ties: {total_ties}')
 
 
 def get_message(player_move: str, computer_move: str) -> str:
     """Returns the message depending on game moves"""
+    first_move = ""
+    second_move = ""
     if (player_move == 'r' and computer_move == 's') or (player_move == 's' and computer_move == 'r'):
-        return "rock beats scissors"
+        first_move = get_move_symbol('r')
+        second_move = get_move_symbol('s')
+    elif (player_move == 's' and computer_move == 'p') or (player_move == 'p' and computer_move == 's'):
+        first_move = get_move_symbol('s')
+        second_move = get_move_symbol('p')
+    elif (player_move == 'p' and computer_move == 'r') or (player_move == 'r' and computer_move == 'p'):
+        first_move = get_move_symbol('p')
+        second_move = get_move_symbol('r')
 
-    if (player_move == 's' and computer_move == 'p') or (player_move == 'p' and computer_move == 's'):
-        return "scissors beats paper"
-
-    if (player_move == 'p' and computer_move == 'r') or (player_move == 'r' and computer_move == 'p'):
-        return "paper beats rock"
-
-    return ""
+    return f'{first_move} beats {second_move}'
 
 
 def get_move_symbol(move: str) -> str:
+    """It returns the move name and symbol"""
     if move == 'r':
-        return 'rock 🪨'
+        return 'rock 🪨 '
     if move == 's':
-        return 'scissors '
-    if move == 'r':
-        return 'rock 🪨'
+        return 'scissors ✂ ️'
+    if move == 'p':
+        return 'paper 🧻 '
+
+    return ""
 
 
 def clear_screen():
