@@ -26,16 +26,19 @@ def main():
         'losses': 0,
         'ties': 0,
     }
-    start_game(player_move, score_board)
+    while True:
+        if not start_game(player_move, score_board):
+            break;
+        player_move = get_player_move()
     display_score_board(score_board)
 
 
-def start_game(player_move: str, score_board: dict) -> None:
+def start_game(player_move: str, score_board: dict) -> bool:
     """Start a new game depending on the player move"""
 
     # If the move was 'q' exit the game
     if player_move == 'q':
-        return
+        return False
 
     computer_move: str = get_computer_move()
     result = get_game_result(player_move, computer_move)
@@ -55,7 +58,7 @@ def start_game(player_move: str, score_board: dict) -> None:
     else:
         score_board['losses'] += 1
 
-    return start_game(get_player_move(), score_board)
+    return True
 
 
 def get_player_move() -> str:
