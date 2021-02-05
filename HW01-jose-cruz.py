@@ -37,15 +37,16 @@ def main() -> None:
 def start_game(player_move: str, score_board: dict) -> bool:
     """Start a new game depending on the player move"""
 
-    # If the move was 'q' exit the game
+    # The player find the easter egg 😲
     if player_move == 'quote':
-        random_quote = get_random_quote()
-        quote = random_quote['quote']
-        game = random_quote['game']
+        random_quote: dict = get_random_quote()
+        quote: str = random_quote['quote']
+        game: str = random_quote['game']
         print(f'\nQUOTE 🗣:\n{quote}')
         print(f' - {game}\n')
         return True
 
+    # If the move was 'q' exit the game
     if player_move == 'q':
         return False
 
@@ -144,7 +145,7 @@ def display_score_board(score_board: dict) -> None:
     """Receives the score board and prints the result"""
     total_wins: int = score_board['wins']
     total_losses: int = score_board['losses']
-    total_ties:int = score_board['ties']
+    total_ties: int = score_board['ties']
 
     games_played = total_wins + total_losses + total_ties
     if games_played == 0:
@@ -202,6 +203,7 @@ def clear_screen() -> None:
     os.system(shlex_quote('cls' if os.name == 'nt' else 'clear'))
     time.sleep(1)
 
+
 def display_random_quote():
     random_quote = get_random_quote()
     quote = random_quote['quote']
@@ -210,6 +212,7 @@ def display_random_quote():
     print('Quote of the game 📝\n')
     print(quote)
     print(f' - {game}\n')
+
 
 def get_random_quote() -> dict:
     """Returns a random quote from a game
@@ -299,6 +302,7 @@ def get_random_quote() -> dict:
         }
     ]
     return choice(quotes)
+
 
 if __name__ == "__main__":
     main()
