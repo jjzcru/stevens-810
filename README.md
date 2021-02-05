@@ -10,4 +10,4 @@ format for your python scripts.
 
 Use the assignment label, First Name, Last Name.
 
-For example for student John Smith's Homework 01: HMW01-john-smith.py
+For example for student John Smith's Homework 01: HW01-john-smith.py
