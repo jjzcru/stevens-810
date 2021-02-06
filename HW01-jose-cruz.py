@@ -20,21 +20,37 @@ from random import choice
 def main() -> None:
     """Main program function"""
     clear_screen()
-    player_move = get_player_move()
     score_board = {
         'wins': 0,
         'losses': 0,
         'ties': 0,
     }
     while True:
-        if not start_game(player_move, score_board):
-            break
         player_move = get_player_move()
+        if not keep_playing(player_move, score_board):
+            break
+
     display_score_board(score_board)
     display_random_quote()
 
 
-def start_game(player_move: str, score_board: dict) -> bool:
+def get_player_move() -> str:
+    """Loops until it get a valid player input"""
+    move: str = input("Please choose 'R', 'P', 'S' or 'Q' to quit: ")
+    move = move.lower()
+
+    # Easter egg 🥚
+    if move == 'quote':
+        return move
+
+    if move != 'r' and move != 'p' and move != 's' and move != 'q':
+        print(f'"{move}" is not a valid option, please try again ⛔️ \n')
+        return get_player_move()
+
+    return move
+
+
+def keep_playing(player_move: str, score_board: dict) -> bool:
     """Start a new game depending on the player move"""
 
     # The player find the easter egg 😲
@@ -69,21 +85,6 @@ def start_game(player_move: str, score_board: dict) -> bool:
         score_board['losses'] += 1
 
     return True
-
-
-def get_player_move() -> str:
-    """Loops until it get a valid player input"""
-    move: str = input("Please choose 'R', 'P', 'S' or 'Q' to quit: ")
-    move = move.lower()
-
-    if move == 'quote':
-        return move
-
-    if move != 'r' and move != 'p' and move != 's' and move != 'q':
-        print(f'"{move}" is not a valid option, please try again ⛔️ \n')
-        return get_player_move()
-
-    return move
 
 
 def get_computer_move() -> str:
@@ -147,7 +148,7 @@ def display_score_board(score_board: dict) -> None:
     total_losses: int = score_board['losses']
     total_ties: int = score_board['ties']
 
-    games_played = total_wins + total_losses + total_ties
+    games_played: int = total_wins + total_losses + total_ties
     if games_played == 0:
         clear_screen()
         print(f"You didn't played at all ☹️")
@@ -174,12 +175,15 @@ def get_message(player_move: str, computer_move: str) -> str:
     first_move: str = ""
     second_move: str = ""
 
+    # If there is a combination of rock and scissors
     if (player_move == 'r' and computer_move == 's') or (player_move == 's' and computer_move == 'r'):
         first_move = get_move_symbol('r')
         second_move = get_move_symbol('s')
+    # If there is a combination of scissors and paper
     elif (player_move == 's' and computer_move == 'p') or (player_move == 'p' and computer_move == 's'):
         first_move = get_move_symbol('s')
         second_move = get_move_symbol('p')
+    # If there is a combination of paper and rock
     elif (player_move == 'p' and computer_move == 'r') or (player_move == 'r' and computer_move == 'p'):
         first_move = get_move_symbol('p')
         second_move = get_move_symbol('r')
