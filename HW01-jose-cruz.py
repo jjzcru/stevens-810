@@ -69,11 +69,13 @@ def keep_playing(player_move: str, score_board: dict) -> bool:
     computer_move: str = get_computer_move()
     result: int = get_game_result(player_move, computer_move)
 
-    display_game_result({
+    game_result = {
         "result": result,
         "computer_move": computer_move,
         "player_move": player_move,
-    })
+    }
+
+    display_game_result(game_result)
     print()
 
     # Add the result to the score board
