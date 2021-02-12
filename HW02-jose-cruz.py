@@ -244,7 +244,7 @@ class FractionCalculator:
             if result:
                 print(f'{first_fraction} and {second_fraction} are equal')
             else:
-                print(f'{first_fraction} and {second_fraction} are equal')
+                print(f'{first_fraction} and {second_fraction} are not equal')
             return
 
         # In this part result can only be a Fraction
