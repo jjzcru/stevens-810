@@ -28,6 +28,8 @@ class Fraction:
         """Initialize the class fractions require a numerator and a denominator
         We check if a denominator is zero, if it is we throw an exception
         """
+        if denominator == 0:
+            raise ValueError('invalid fraction denominator can not be zero')
         self.numerator: int = numerator
         self.denominator: int = denominator
 
@@ -60,13 +62,8 @@ class Fraction:
     def times(self, other: 'Fraction') -> 'Fraction':
         """Calculate the product between the current fraction and the other fraction
         and returns the result as another fraction"""
+        result_numerator: int = self.numerator * other.numerator
         result_denominator: int = self.denominator * other.denominator
-
-        # Get the numerator for the second fraction
-        first_numerator: int = int((result_denominator / self.denominator) * self.numerator)
-        second_numerator: int = int((result_denominator / other.denominator) * other.numerator)
-
-        result_numerator: int = first_numerator * second_numerator
         return Fraction(result_numerator, result_denominator)
 
     def divide(self, other: 'Fraction') -> 'Fraction':
@@ -93,30 +90,151 @@ class Fraction:
             return '0'
 
         # Check if the module is 0
-        if self.numerator % self.denominator == 0:
+        if self.numerator > self.denominator and self.numerator % self.denominator == 0:
             return f'{int(self.numerator / self.denominator)}'
+
+        if self.numerator == self.denominator:
+            return '1'
 
         d = gcd(self.numerator, self.denominator)
 
-        return f'{int(self.numerator / d)}/{int(self.denominator / d)} ({self.numerator / self.denominator})'
+        return f'{int(self.numerator / d)}/{int(self.denominator / d)} ({round(self.numerator / self.denominator, 3)})'
 
     def __str__(self) -> str:
         return f'{self.numerator}/{self.denominator}'
 
 
+class FractionCalculator:
+    __slots__ = ['first_fraction', 'operation', 'second_fraction', 'result', 'separator']
+
+    def __init__(self):
+        """Initialize the fraction calculator in here we assign
+        all the properties that are going to be used"""
+        self.first_fraction: Fraction or None = None
+        self.second_fraction: Fraction or None = None
+        self.operation: str = ''
+        self.result: Fraction or bool or None = None
+        self.separator: str = '-------------------------'
+
+    def execute(self) -> None:
+        """It starts a fraction calculator"""
+        clear_screen()
+        print("Welcome to the fraction calculator! 👾")
+        print(self.separator)
+        print('Get information for the first fraction')
+        self.first_fraction: Fraction = self.get_fraction()
+        print(self.separator)
+        print('Get Fraction Operation')
+        self.operation: str = self.get_operation()
+        print(self.separator)
+        print('Get information for the second fraction')
+        self.second_fraction: Fraction = self.get_fraction()
+
+        # When we are diving we are rotating numerator and denominator this will throw an exception
+        if self.operation == '/' and self.second_fraction.numerator == 0:
+            input('This operation generates a zero value denominator, press Enter to try again ')
+            return self.execute()
+        self.result = self.get_operation_result()
+        self.display_result()
+
+    @staticmethod
+    def get_fraction() -> 'Fraction':
+        """Get fraction from user input"""
+
+        # Loops until it gets a valid value for the numerator
+        while True:
+            try:
+                user_input: str = input('Insert fraction numerator: ')
+                numerator: int = int(user_input)
+            except ValueError:
+                print('Please insert a valid number')
+            else:
+                break
+
+        # Loops until it gets a valid value for the denominator
+        while True:
+            try:
+                user_input = input('Insert fraction denominator: ')
+                denominator: int = int(user_input)
+                if denominator == 0:
+                    raise ZeroDivisionError
+            except ValueError:
+                print('Please insert a valid number')
+            except ZeroDivisionError:
+                print('Fractions can have zero denominator')
+            else:
+                break
+
+        return Fraction(numerator, denominator)
+
+    @staticmethod
+    def get_operation() -> str:
+        # Loops until it gets a valid operator
+        while True:
+            user_input: str = input('Please insert a valid operation (+, -, *, /, ==): ')
+            if user_input == '+' or user_input == '-' or user_input == '*' or user_input == '/' or user_input == '==':
+                return user_input
+            print('I SAID A VALID OPERATION!!! 😡')
+
+    def get_operation_result(self) -> 'Fraction' or bool:
+        """Receives two fractions and a operation to be performed and returns the result
+            If an invalid operation is passed it raise an exception
+        """
+        first_fraction = self.first_fraction
+        operation = self.operation
+        second_fraction = self.second_fraction
+
+        if operation == '+':
+            return first_fraction.plus(second_fraction)
+
+        if operation == '-':
+            return first_fraction.minus(second_fraction)
+
+        if operation == '*':
+            return first_fraction.times(second_fraction)
+
+        if operation == '/':
+            return first_fraction.divide(second_fraction)
+
+        if operation == '==':
+            return first_fraction.equals(second_fraction)
+
+        raise Exception('Invalid operation')
+
+    def display_result(self) -> None:
+        """Display the program message"""
+        clear_screen()
+        first_fraction = self.first_fraction
+        operation = self.operation
+        second_fraction = self.second_fraction
+        result = self.result
+        # This only happens with the equal operation
+        print(f'First Fraction: {first_fraction}')
+        print(f'Operation: {operation}')
+        print(f'Second Fraction: {second_fraction}')
+        print('-------------------------')
+        if type(result) is bool:
+            if result:
+                print(f'{first_fraction} and {second_fraction} are equal')
+            else:
+                print(f'{first_fraction} and {second_fraction} are equal')
+            return
+
+        # In this part result can only be a Fraction
+        print(f'{first_fraction} {operation} {second_fraction} = {result.reduce()}')
+
+
 def main() -> None:
     """Main program function"""
-    clear_screen()
-    first_fraction = Fraction(1, 2)
-    second_fraction = Fraction(3, 4)
-    operation: str = '+'
-
-    result: None or bool or 'Fraction' = get_operation_result(first_fraction, second_fraction, operation)
-    print_message(first_fraction, second_fraction, operation, result)
+    fraction_calculator: FractionCalculator = FractionCalculator()
+    fraction_calculator.execute()
 
 
 def get_operation_result(first_fraction: 'Fraction', second_fraction: 'Fraction',
-                         operation: str) -> 'Fraction' or None or bool:
+                         operation: str) -> 'Fraction' or bool:
+    """Receives two fractions and a operation to be performed and returns the result
+        If an invalid operation is passed it raise an exception
+    """
     if operation == '+':
         return first_fraction.plus(second_fraction)
     if operation == '-':
@@ -127,16 +245,13 @@ def get_operation_result(first_fraction: 'Fraction', second_fraction: 'Fraction'
         return first_fraction.divide(second_fraction)
     if operation == '==':
         return first_fraction.equals(second_fraction)
-    return None
+    raise Exception('Invalid operation')
 
 
 def print_message(first_fraction: 'Fraction', second_fraction: 'Fraction', operation: str,
-                  result: None or bool or 'Fraction') -> None:
+                  result: bool or 'Fraction') -> None:
     """Display the program message"""
     clear_screen()
-    if result is None:
-        print('Something wrong happened, please try again')
-
     # This only happens with the equal operation
     if type(result) is bool:
         if result:
@@ -152,8 +267,54 @@ def print_message(first_fraction: 'Fraction', second_fraction: 'Fraction', opera
 def test_suite():
     """It runs the test suite"""
     clear_screen()
-    print("Hello I'm a robot🤖")
+    separator = '\n---------------------------\n'
+    print("Hello I'm a robot 🤖")
     print("I will run a test suite to make sure that everything is working fine 👌")
+    print(separator)
+    print('TEST SUITE #1')
+    first_fraction: Fraction = Fraction(1, 2)  # 1/2
+    second_fraction: Fraction = Fraction(3, 4)  # 3/4
+    print(f'First fraction: {first_fraction}')
+    print(f'Second fraction: {second_fraction}\n')
+    print(f'{first_fraction} + {second_fraction} = {first_fraction.plus(second_fraction).reduce()} [5/4]')
+    print(f'{first_fraction} - {second_fraction} = {first_fraction.minus(second_fraction).reduce()} [-1/4]')
+    print(f'{first_fraction} * {second_fraction} = {first_fraction.times(second_fraction).reduce()} [3/8]')
+    print(f'{first_fraction} / {second_fraction} = {first_fraction.divide(second_fraction).reduce()} [2/3]')
+    print(f'Is {first_fraction} equal to {second_fraction} ? {first_fraction.equals(second_fraction)} [False]')
+
+    print(separator)
+    print('TEST SUITE #2')
+    first_fraction = Fraction(1, 3)  # 1/3
+    second_fraction = Fraction(1, 3)  # 1/3
+    third_fraction: Fraction = Fraction(1, 3)  # 1/3
+
+    print(f'First fraction: {first_fraction}')
+    print(f'Second fraction: {second_fraction}')
+    print(f'Third fraction: {third_fraction}\n')
+    fraction_sum: Fraction = first_fraction.plus(second_fraction).plus(third_fraction)
+    print(f'{first_fraction} + {second_fraction} + {third_fraction} = {fraction_sum.reduce()} [1]')
+    fraction_sum = first_fraction.plus(second_fraction).minus(third_fraction)
+    print(f'{first_fraction} + {second_fraction} - {third_fraction} = {fraction_sum.reduce()} [1/3]')
+    fraction_sum = first_fraction.times(second_fraction).divide(third_fraction)
+    print(f'{first_fraction} * {second_fraction} / {third_fraction} = {fraction_sum.reduce()} [1/3]')
+    fraction_sum = first_fraction.times(second_fraction).times(third_fraction)
+    print(f'{first_fraction} * {second_fraction} * {third_fraction} = {fraction_sum.reduce()} [1/27]')
+    fraction_sum = first_fraction.minus(second_fraction).minus(third_fraction)
+    print(f'{first_fraction} - {second_fraction} - {third_fraction} = {fraction_sum.reduce()} [-1/3]')
+    print(f'Is {first_fraction} equal to {second_fraction} ? {first_fraction.equals(second_fraction)} [True]')
+
+    print(separator)
+    print('TEST SUITE #3')
+    first_fraction = Fraction(1, 4)  # 1/4
+    second_fraction = Fraction(3, 4)  # 3/4
+
+    print(f'First fraction: {first_fraction}')
+    print(f'Second fraction: {second_fraction}\n')
+    print(f'{first_fraction} + {second_fraction} = {first_fraction.plus(second_fraction).reduce()} [1]')
+    print(f'{first_fraction} - {second_fraction} = {first_fraction.minus(second_fraction).reduce()} [-1/2]')
+    print(f'{first_fraction} * {second_fraction} = {first_fraction.times(second_fraction).reduce()} [3/16]')
+    print(f'{first_fraction} / {second_fraction} = {first_fraction.divide(second_fraction).reduce()} [1/3]')
+    print(f'Is {first_fraction} equal to {second_fraction} ? {first_fraction.equals(second_fraction)} [False]')
 
 
 def clear_screen() -> None:
