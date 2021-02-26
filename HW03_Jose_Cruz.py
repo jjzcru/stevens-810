@@ -1,25 +1,29 @@
-"""HW02: Fractions
+"""HW03: Fractions Unit Tests
 
-   Implement a fraction calculator that asks the user for two
-   fractions and an operator and then prints the result
+   Test the Fraction object using the unittest package
 
-   OUTPUT EXAMPLE
-   Welcome to the fraction calculator!
-   Fraction 1 numerator: 1 <-- user entered 1
-   Fraction 1 denominator: 2 <-- user entered 1
-   Operation (+, -, *, /, ==): + <-- user entered +
-   Fraction 2 numerator: 3 <-- user entered 1
-   Fraction 1 denominator: 4 <-- user entered 1
-   1/2 + 3/4 = 10/8 <-- final result
+   Assignment:
+   1. Overwrite the methods to use pythons magic methods:
+        __add__()
+        __sub__()
+        __mul__()
+        __truediv__()
+        __eq__()
+   2. Add new methods:
+        __ne__(self, other: "Fraction"): not equal
+        __lt__(self, other: "Fraction"): less than
+        __le__(self, other: "Fraction"): less than or equal to
+        __gt__(self, other: "Fraction"): greater than
+        __ge__(self, other: "Fraction"): greater than or equal to
+   3. Use Python’s unittest to replace the test cases from your
+   Homework 02 submission with unittest self.assert*() tests
+   4. Along with the new methods and test suite, you will also get
+   some experience using the Python debugger.
 
    CONVENTIONS:
    - Max character limit per line 80
    - CapWords for class names
    - snake_case for variables and functions
-
-   TEST SUITE:
-   To run the test suite send the word 'test' as the first argument
-   Example: "python HW02-jose-cruz.py test"
 
    Author: Jose J. Cruz
 """
@@ -42,7 +46,7 @@ class Fraction:
         self.numerator: int = numerator
         self.denominator: int = denominator
 
-    def plus(self, other: 'Fraction') -> 'Fraction':
+    def __add__(self, other: 'Fraction') -> 'Fraction':
         """Adds a fraction value to the object and return the
         result as another fraction object"""
         result_denominator: int = self.denominator * other.denominator
@@ -57,7 +61,7 @@ class Fraction:
         result_numerator: int = first_numerator + second_numerator
         return Fraction(result_numerator, result_denominator)
 
-    def minus(self, other: 'Fraction') -> 'Fraction':
+    def __sub__(self, other: 'Fraction') -> 'Fraction':
         """Calculate the difference between the current fraction and other
         and returns the result as another fraction"""
         result_denominator: int = self.denominator * other.denominator
@@ -72,7 +76,7 @@ class Fraction:
         result_numerator: int = first_numerator - second_numerator
         return Fraction(result_numerator, result_denominator)
 
-    def times(self, other: 'Fraction') -> 'Fraction':
+    def __mul__(self, other: 'Fraction') -> 'Fraction':
         """Calculate the product between the current 
         fraction and the other fraction and returns the 
         result as another fraction"""
@@ -80,7 +84,7 @@ class Fraction:
         result_denominator: int = self.denominator * other.denominator
         return Fraction(result_numerator, result_denominator)
 
-    def divide(self, other: 'Fraction') -> 'Fraction':
+    def __truediv__(self, other: 'Fraction') -> 'Fraction':
         """Calculate the quotient between the current fraction and 
         the other fraction and returns the result as another fraction"""
 
@@ -88,12 +92,36 @@ class Fraction:
         fraction = Fraction(other.denominator, other.numerator)
 
         # We use the times operation since is the same logic
-        return self.times(fraction)
+        return self.__mul__(fraction)
 
-    def equals(self, other: 'Fraction') -> bool:
+    def __eq__(self, other: 'Fraction') -> bool:
         """Check if the two fractions are equal"""
         return (self.numerator * other.denominator) == (
                 self.denominator * other.numerator)
+
+    def __ne__(self, other: 'Fraction') -> bool:
+        """Check if the two fractions are not equal"""
+        return not self.__eq__(other)
+
+    def __lt__(self, other: 'Fraction') -> bool:
+        """Check if the fraction is less than other fraction"""
+        return self.numerator / self.denominator < \
+               other.numerator / other.denominator
+
+    def __le__(self, other: 'Fraction') -> bool:
+        """Check if the fraction is less than or equal to other fraction"""
+        return self.numerator / self.denominator <= \
+               other.numerator / other.denominator
+
+    def __gt__(self, other: 'Fraction') -> bool:
+        """Check if the fraction is greater than other fraction"""
+        return self.numerator / self.denominator > \
+               other.numerator / other.denominator
+
+    def __ge__(self, other: 'Fraction') -> bool:
+        """Check if the fraction is greater than or equal to other fraction"""
+        return self.numerator / self.denominator >= \
+               other.numerator / other.denominator
 
     def reduce(self) -> str:
         """Reduce a fraction for readability
@@ -275,19 +303,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [5/4]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [5/4]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [-1/4]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [-1/4]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [3/8]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [3/8]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [2/3]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [2/3]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [False]')
+        f'{first_fraction.__eq__(second_fraction)} [False]')
 
     print(separator)
     print('TEST SUITE #2')
@@ -298,30 +326,34 @@ def test_suite() -> None:
     print(f'First fraction: {first_fraction}')
     print(f'Second fraction: {second_fraction}')
     print(f'Third fraction: {third_fraction}\n')
-    fraction_sum: Fraction = first_fraction.plus(second_fraction).plus(
+    fraction_sum: Fraction = first_fraction.__add__(second_fraction).__add__(
         third_fraction)
     print(
         f'{first_fraction} + {second_fraction} + {third_fraction} = '
         f'{fraction_sum.reduce()} [1]')
-    fraction_sum = first_fraction.plus(second_fraction).minus(third_fraction)
+    fraction_sum = first_fraction.__add__(second_fraction).__sub__(
+        third_fraction)
     print(
         f'{first_fraction} + {second_fraction} - {third_fraction} = '
         f'{fraction_sum.reduce()} [1/3]')
-    fraction_sum = first_fraction.times(second_fraction).divide(third_fraction)
+    fraction_sum = first_fraction.__mul__(second_fraction).__truediv__(
+        third_fraction)
     print(
         f'{first_fraction} * {second_fraction} / {third_fraction} = '
         f'{fraction_sum.reduce()} [1/3]')
-    fraction_sum = first_fraction.times(second_fraction).times(third_fraction)
+    fraction_sum = first_fraction.__mul__(second_fraction).__mul__(
+        third_fraction)
     print(
         f'{first_fraction} * {second_fraction} * {third_fraction} = '
         f'{fraction_sum.reduce()} [1/27]')
-    fraction_sum = first_fraction.minus(second_fraction).minus(third_fraction)
+    fraction_sum = first_fraction.__sub__(second_fraction).__sub__(
+        third_fraction)
     print(
         f'{first_fraction} - {second_fraction} - {third_fraction} = '
         f'{fraction_sum.reduce()} [-1/3]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [True]')
+        f'{first_fraction.__eq__(second_fraction)} [True]')
 
     print(separator)
     print('TEST SUITE #3')
@@ -332,19 +364,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [1]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [1]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [-1/2]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [-1/2]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [3/16]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [3/16]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [1/3]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [1/3]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [False]')
+        f'{first_fraction.__eq__(second_fraction)} [False]')
 
     print(separator)
     print('TEST SUITE #4')
@@ -355,19 +387,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [3/2]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [3/2]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [-1/2]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [-1/2]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [1/2]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [1/2]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [1/2]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [1/2]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [False]')
+        f'{first_fraction.__eq__(second_fraction)} [False]')
 
     print(separator)
     print('TEST SUITE #5')
@@ -378,19 +410,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [1]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [1]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [0]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [0]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [1/4]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [1/4]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [1]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [1]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [True]')
+        f'{first_fraction.__eq__(second_fraction)} [True]')
 
     print(separator)
     print('TEST SUITE #6')
@@ -401,19 +433,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [3/2]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [3/2]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [1/2]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [1/2]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [1/2]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [1/2]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [2]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [2]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [False]')
+        f'{first_fraction.__eq__(second_fraction)} [False]')
 
     print(separator)
     print('TEST SUITE #7')
@@ -424,19 +456,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [5/2]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [5/2]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [-1/2]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [-1/2]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [3/2]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [3/2]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [2/3]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [2/3]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [False]')
+        f'{first_fraction.__eq__(second_fraction)} [False]')
 
     print(separator)
     print('TEST SUITE #8')
@@ -447,19 +479,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [5/2]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [5/2]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [1/2]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [1/2]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [3/2]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [3/2]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [3/2]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [3/2]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [False]')
+        f'{first_fraction.__eq__(second_fraction)} [False]')
 
     print(separator)
     print('TEST SUITE #9')
@@ -470,19 +502,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [3]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [3]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [0]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [0]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [9/4]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [9/4]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [1]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [1]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [True]')
+        f'{first_fraction.__eq__(second_fraction)} [True]')
 
     print(separator)
     print('TEST SUITE #10')
@@ -493,19 +525,19 @@ def test_suite() -> None:
     print(f'Second fraction: {second_fraction}\n')
     print(
         f'{first_fraction} + {second_fraction} = '
-        f'{first_fraction.plus(second_fraction).reduce()} [3]')
+        f'{first_fraction.__add__(second_fraction).reduce()} [3]')
     print(
         f'{first_fraction} - {second_fraction} = '
-        f'{first_fraction.minus(second_fraction).reduce()} [0]')
+        f'{first_fraction.__sub__(second_fraction).reduce()} [0]')
     print(
         f'{first_fraction} * {second_fraction} = '
-        f'{first_fraction.times(second_fraction).reduce()} [9/4]')
+        f'{first_fraction.__mul__(second_fraction).reduce()} [9/4]')
     print(
         f'{first_fraction} / {second_fraction} = '
-        f'{first_fraction.divide(second_fraction).reduce()} [1]')
+        f'{first_fraction.__truediv__(second_fraction).reduce()} [1]')
     print(
         f'Is {first_fraction} equal to {second_fraction} ? '
-        f'{first_fraction.equals(second_fraction)} [True]')
+        f'{first_fraction.__eq__(second_fraction)} [True]')
 
 
 def clear_screen() -> None:
