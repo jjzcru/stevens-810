@@ -45,6 +45,18 @@ def last_occurrence(target: Any, sequence: Sequence[Any]) -> Optional[int]:
     return index
 
 
+def gcf(numerator: int, denominator: int) -> int:
+    """Calculate the Greatest Common Denominator using Euclid's Algorithm
+
+        Reference:
+        http://www-math.ucdenver.edu/~wcherowi/courses/m5410/exeucalg.html
+     """
+    if denominator == 0:
+        return numerator
+    else:
+        return gcf(denominator, numerator % denominator)
+
+
 class CountVowelsTest(unittest.TestCase):
     def test_count_vowels(self) -> None:
         """Test count vowels function"""
@@ -64,6 +76,16 @@ class LastOccurrenceTest(unittest.TestCase):
         """Test get the last occurrence"""
         self.assertEqual(last_occurrence('P', 'Python'), 0)
         self.assertIsNone(last_occurrence('p', 'Python'))
+
+
+class GCFTest(unittest.TestCase):
+    def test_gcf(self) -> None:
+        """Test getting the greatest common factor"""
+        self.assertEqual(gcf(2, 4), 2)
+        self.assertEqual(gcf(3, 6), 3)
+        self.assertEqual(gcf(9, 3), 3)
+        self.assertEqual(gcf(2, 5), 1)
+        self.assertEqual(gcf(7, 13), 1)
 
 
 if __name__ == '__main__':
