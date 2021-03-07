@@ -13,7 +13,7 @@
    Author: Jose J. Cruz
 """
 import unittest
-from HW03_Jose_Cruz import Fraction
+from HW03_Jose_Cruz import Fraction, gcf
 
 
 class FractionTest(unittest.TestCase):
@@ -111,6 +111,26 @@ class FractionTest(unittest.TestCase):
         self.assertRaises(ValueError, Fraction, 1, 0)
         self.assertRaises(ValueError, Fraction, 0, 0)
         self.assertRaises(ValueError, Fraction, 2, 0)
+
+    def test_simplify(self) -> None:
+        """Test simplify method for fractions"""
+        self.assertEqual(str(Fraction(9, 27).simplify()), str(Fraction(1, 3)))
+        self.assertEqual(str(Fraction(5, 10).simplify()), str(Fraction(1, 2)))
+        self.assertEqual(str(Fraction(14, 7).simplify()), str(Fraction(2, 1)))
+        self.assertEqual(str(Fraction(49, 7).simplify()), str(Fraction(7, 1)))
+        self.assertEqual(str(Fraction(-49, 7).simplify()), str(Fraction(-7, 1)))
+
+
+class GCFTest(unittest.TestCase):
+    """Test suite for getting the greatest common factor"""
+
+    def test_gcf(self) -> None:
+        """Test getting the greatest common factor"""
+        self.assertEqual(gcf(2, 4), 2)
+        self.assertEqual(gcf(3, 6), 3)
+        self.assertEqual(gcf(9, 3), 3)
+        self.assertEqual(gcf(2, 5), 1)
+        self.assertEqual(gcf(7, 13), 1)
 
 
 if __name__ == '__main__':

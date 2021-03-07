@@ -34,6 +34,20 @@ from shlex import quote as shlex_quote
 from math import gcd
 
 
+def gcf(numerator: int, denominator: int) -> int:
+    """Calculate the Greatest Common Denominator using Euclid's Algorithm
+
+        Reference:
+        http://www-math.ucdenver.edu/~wcherowi/courses/m5410/exeucalg.html
+     """
+    numerator = abs(numerator)
+    denominator = abs(denominator)
+    if denominator == 0:
+        return numerator
+    else:
+        return gcf(denominator, numerator % denominator)
+
+
 class Fraction:
     __slots__ = ['numerator', 'denominator']
 
@@ -122,6 +136,15 @@ class Fraction:
         """Check if the fraction is greater than or equal to other fraction"""
         return self.numerator / self.denominator >= \
                other.numerator / other.denominator
+
+    def simplify(self) -> 'Fraction':
+        factor: int = gcf(self.numerator, self.denominator)
+
+        if factor == 1:
+            return self
+
+        return Fraction(int(self.numerator / factor),
+                        int(self.denominator / factor))
 
     def reduce(self) -> str:
         """Reduce a fraction for readability
