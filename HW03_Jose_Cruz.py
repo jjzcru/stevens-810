@@ -138,6 +138,9 @@ class Fraction:
                other.numerator / other.denominator
 
     def simplify(self) -> 'Fraction':
+        """Simply the fraction, first it gets the gcf, if the factor 
+        is bigger than 1 it returns a new fraction and return self is 
+        the factor is equal to 1"""
         factor: int = gcf(self.numerator, self.denominator)
 
         if factor == 1:
@@ -165,7 +168,7 @@ class Fraction:
         if self.numerator == self.denominator:
             return '1'
 
-        d = gcd(self.numerator, self.denominator)
+        d = gcf(self.numerator, self.denominator)
 
         return f'{int(self.numerator / d)}/{int(self.denominator / d)} ' \
                f'({round(self.numerator / self.denominator, 3)})'

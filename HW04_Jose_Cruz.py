@@ -21,15 +21,13 @@
         that provides the same functionality
 
     Part 5: random_integer_generator
-    Write a generator random_integer_generator that returns a potentially
-    infinite sequence of random integers between a min and max value.
+        Write a generator random_integer_generator that returns a potentially
+        infinite sequence of random integers between a min and max value.
 
    CONVENTIONS:
    - Max character limit per line 80
    - CapWords for class names
    - snake_case for variables and functions
-   - asertEqual for arithmetics operators
-   - assertIsNone for Optional validation
 
    Author: Jose J. Cruz
 """

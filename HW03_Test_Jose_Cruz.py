@@ -17,6 +17,7 @@ from HW03_Jose_Cruz import Fraction, gcf
 
 
 class FractionTest(unittest.TestCase):
+    """Test suite for Fractions functions"""
     def test_add(self) -> None:
         """Test the add operator"""
         self.assertEqual(Fraction(1, 2) + Fraction(1, 2), 1)

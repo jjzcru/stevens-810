@@ -14,11 +14,12 @@
     - asertEqual for arithmetics operators
     - assertTrue for logical operators
     - assertRaises for test zero division
+    - assertLessEqual for attempts validation
 
    Author: Jose J. Cruz
 """
 import unittest
-from HW03_Jose_Cruz import Fraction, gcf
+from HW03_Jose_Cruz import Fraction
 from HW04_Jose_Cruz import count_vowels, last_occurrence, my_enumerate, \
     find_target
 
