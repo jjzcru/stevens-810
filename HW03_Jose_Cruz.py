@@ -26,6 +26,7 @@
    - snake_case for variables and functions
 
    Author: Jose J. Cruz
+   CWID: 10467076
 """
 import os
 import time
