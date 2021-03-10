@@ -19,6 +19,12 @@ from HW03_Jose_Cruz import Fraction, gcf
 
 class FractionTest(unittest.TestCase):
     """Test suite for Fractions functions"""
+    def test_type_assertion_in_constructor(self) -> None:
+        """Test valid types for Fraction constructor"""
+        self.assertRaises(TypeError, Fraction, 'a', 0)
+        self.assertRaises(TypeError, Fraction, [0], 'a')
+        self.assertRaises(TypeError, Fraction, 20.0, 1)
+
     def test_add(self) -> None:
         """Test the add operator"""
         self.assertEqual(Fraction(1, 2) + Fraction(1, 2), 1)
@@ -125,6 +131,12 @@ class FractionTest(unittest.TestCase):
 
 class GCFTest(unittest.TestCase):
     """Test suite for getting the greatest common factor"""
+
+    def test_gcf_invalid_types(self) -> None:
+        """Test type in gcf function"""
+        self.assertRaises(TypeError, gcf, 'a', 0)
+        self.assertRaises(TypeError, gcf, 1, 0.1)
+        self.assertRaises(TypeError, gcf, 0, 'a')
 
     def test_gcf(self) -> None:
         """Test getting the greatest common factor"""

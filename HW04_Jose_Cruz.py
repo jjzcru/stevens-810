@@ -38,6 +38,9 @@ from typing import List, Any, Sequence, Optional, Iterator
 
 def count_vowels(word: str) -> int:
     """Receives a word and return the amount of vowels"""
+    if type(word) != str:
+        raise TypeError('Value must be a str')
+
     total_of_vowels: int = 0
     vowels: List[str] = ['a', 'e', 'i', 'o', 'u']
 
@@ -51,6 +54,10 @@ def count_vowels(word: str) -> int:
 def last_occurrence(target: Any, sequence: Sequence[Any]) -> Optional[int]:
     """Receives target to find an a sequence and returns the index of
     the item if found or None otherwise"""
+
+    if not isinstance(sequence, Sequence):
+        raise TypeError('Value must be a Sequence')
+
     index: Optional[int] = None
     for offset, item in enumerate(sequence):
         if item == target:
@@ -60,6 +67,9 @@ def last_occurrence(target: Any, sequence: Sequence[Any]) -> Optional[int]:
 
 def my_enumerate(seq: Sequence[Any]) -> Iterator[Any]:
     """Receives a sequence and returns the item and the index position"""
+    if not isinstance(seq, Sequence):
+        raise TypeError('Value must be a Sequence')
+
     index: int = 0
     for item in seq:
         yield index, item
@@ -69,6 +79,12 @@ def my_enumerate(seq: Sequence[Any]) -> Iterator[Any]:
 def random_integer_generator(minimum: int, maximum: int) -> Iterator[int]:
     """Returns a potentially infinite sequence of random integers
     between a min and max value"""
+    if not isinstance(minimum, int):
+        raise TypeError('Value must be an int')
+
+    if not isinstance(maximum, int):
+        raise TypeError('Value must be an int')
+
     if minimum > maximum:
         raise ValueError('minimum number can not be larger than maximum')
 
@@ -81,6 +97,15 @@ def find_target(target: int, minimum: int, maximum: int, max_attempts: int) -> \
         Optional[int]:
     """Takes a min and max value and read random values until it finds
     the target"""
+    if not isinstance(target, int):
+        raise TypeError('Value must be an int')
+
+    if not isinstance(minimum, int):
+        raise TypeError('Value must be an int')
+
+    if not isinstance(maximum, int):
+        raise TypeError('Value must be an int')
+
     if minimum > maximum:
         raise ValueError('minimum number can not be larger than maximum')
 

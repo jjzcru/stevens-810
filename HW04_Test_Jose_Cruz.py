@@ -30,6 +30,12 @@ from HW04_Jose_Cruz import count_vowels, last_occurrence, my_enumerate, \
 class CountVowelsTest(unittest.TestCase):
     """Test suite for counting vowels"""
 
+    def test_type_error(self) -> None:
+        """Test type error in count_vowels"""
+        self.assertRaises(TypeError, count_vowels, 0)
+        self.assertRaises(TypeError, count_vowels, ['a'])
+        self.assertRaises(TypeError, count_vowels, 11.1)
+
     def test_count_vowels(self) -> None:
         """Test count vowels function"""
         self.assertEqual(count_vowels('hello world'), 3)
@@ -38,6 +44,12 @@ class CountVowelsTest(unittest.TestCase):
 
 class LastOccurrenceTest(unittest.TestCase):
     """Test suite for get the last occurrence of a target"""
+
+    def test_type_error(self) -> None:
+        """Test type error in last_occurrence"""
+        self.assertRaises(TypeError, last_occurrence, 'a', None)
+        self.assertRaises(TypeError, last_occurrence, 1, 1)
+        self.assertRaises(TypeError, last_occurrence, 1, 1.2)
 
     def test_last_occurrence(self) -> None:
         """Test get the last occurrence"""
@@ -67,8 +79,15 @@ class SimplifyTest(unittest.TestCase):
 class MyEnumerateTest(unittest.TestCase):
     """Test suite for my enumerate implementation"""
 
+    def test_my_enumerate_type_error(self) -> None:
+        """Test type error in my_enumerate"""
+        self.assertRaises(TypeError, my_enumerate, None, 'a')
+        self.assertRaises(TypeError, my_enumerate, None, 1)
+
     def test_my_enumerate(self) -> None:
         """Test my enumerate implementation"""
+        self.assertEqual(list(my_enumerate([1, 2, 3])),
+                         list(enumerate([1, 2, 3])))
         self.assertEqual(list(my_enumerate([1, 2, 3])),
                          list(enumerate([1, 2, 3])))
         self.assertEqual(list(my_enumerate([3, 2, 1])),
@@ -88,6 +107,8 @@ class FindTargetTest(unittest.TestCase):
         """Test exception in find_target"""
         self.assertRaises(ValueError, find_target, 5, 7, 10, 100)
         self.assertRaises(ValueError, find_target, 5, 10, 1, 100)
+        self.assertRaises(TypeError, find_target, None, 'a')
+        self.assertRaises(TypeError, find_target, None, 1)
 
     def test_find_target(self) -> None:
         """Test find target in generator"""

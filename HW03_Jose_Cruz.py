@@ -36,11 +36,17 @@ from math import gcd
 
 
 def gcf(numerator: int, denominator: int) -> int:
-    """Calculate the Greatest Common Denominator using Euclid's Algorithm
+    """Calculate the Greatest Common Factor using Euclid's Algorithm
 
         Reference:
         http://www-math.ucdenver.edu/~wcherowi/courses/m5410/exeucalg.html
      """
+    if type(numerator) != int:
+        raise TypeError('Value must be an int')
+
+    if type(denominator) != int:
+        raise TypeError('Value must be an int')
+
     numerator = abs(numerator)
     denominator = abs(denominator)
     if denominator == 0:
@@ -56,6 +62,12 @@ class Fraction:
         """Initialize the class fractions require a numerator and a denominator
         We check if a denominator is zero, if it is we throw an exception
         """
+        if type(numerator) != int:
+            raise TypeError('Value must be an int')
+
+        if type(denominator) != int:
+            raise TypeError('Value must be an int')
+
         if denominator == 0:
             raise ValueError('invalid fraction denominator can not be zero')
         self.numerator: int = numerator
