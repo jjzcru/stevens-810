@@ -16,8 +16,9 @@
    CWID: 10467076
 """
 import unittest
+from typing import List
 
-from HW05_Jose_Cruz import reverse, substring, find_second
+from HW05_Jose_Cruz import reverse, substring, find_second, get_lines
 
 
 class ReverseTest(unittest.TestCase):
@@ -68,7 +69,7 @@ class FindSecondTest(unittest.TestCase):
         self.assertRaises(TypeError, find_second, "a", 11.1)
 
     def test_find_second(self) -> None:
-        """Test the substring function"""
+        """Test the find_second function"""
         self.assertEqual(find_second("he", "hello"), -1)
         self.assertEqual(find_second("l", "hello"), 3)
         self.assertEqual(find_second("xxx", "hello"), -1)
@@ -78,6 +79,26 @@ class FindSecondTest(unittest.TestCase):
         self.assertEqual(find_second("ba", "abbabba"), 5)
         self.assertEqual(find_second("a", "abbabba"), 3)
         self.assertEqual(find_second("ax", "abbaxbba"), -1)
+
+
+class GetLinesTest(unittest.TestCase):
+    """Test suite for substring function"""
+
+    def test_find_second(self) -> None:
+        """Test the find_second function"""
+        test_file_path = 'HW05.txt'
+
+        expect: List[str] = [
+            '<line0>',
+            '<line1>',
+            '<line2>',
+            '<line3.1 line3.2 line3.3>',
+            '<line4.1 line4.2>',
+            '<line5>',
+            '<line6>'
+        ]
+        result: List[str] = list(get_lines(test_file_path))
+        self.assertEqual(result, expect)
 
 
 if __name__ == '__main__':
