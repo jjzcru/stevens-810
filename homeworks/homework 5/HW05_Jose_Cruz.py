@@ -115,16 +115,21 @@ def find_second(target: str, word: str) -> int:
 
 
 def _remove_comments(line: str) -> str:
+    """Receives a string a remove the comments"""
+    if len(line) == 0:
+        return line
+
     comment_index = _find_nth_occurrence('#', line)
     if comment_index < 0:
-        return line.strip('\n')
+        return line.rstrip('\n')
 
+    # If i find the comment at the begging of the string remove the whole line
     if comment_index == 0:
         return ''
 
     response: str = line[0:comment_index]
 
-    return response.strip('\n')
+    return response.rstrip('\n')
 
 
 def get_lines(path: str) -> Iterator[str]:
@@ -143,22 +148,30 @@ def get_lines(path: str) -> Iterator[str]:
         raise IOError(f'the path {path} is not a file')
 
     response: str = ''
+    is_continuation: bool = False
     with open(path, "r") as file:
         for line in file.readlines():
             # Remove break lines
             line = line.strip('\n')
 
-            # Ignores empty lines
+            # Empty line
             if len(line) == 0:
-                continue
+                if is_continuation:
+                    response += line
+                else:
+                    yield ''
+                    is_continuation = False
+                    continue
 
             # Trigger append and go to next iteration
             if line[-1] == '\\':
-                line = line.strip('\\')
+                line = line.rstrip('\\')
                 response += line
+                is_continuation = True
                 continue
-            else:
-                response += line
+
+            is_continuation = False
+            response += line
 
             # Remove comments
             response = _remove_comments(response)
@@ -170,7 +183,7 @@ def get_lines(path: str) -> Iterator[str]:
 
         # If we have any remaining string in response we yield it
         # Example dangling \ characters
-        if len(response) > 0:
+        if len(response) > 0 and is_continuation:
             yield response
 
         # Make sure to close the file
