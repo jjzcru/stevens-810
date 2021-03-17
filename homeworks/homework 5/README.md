@@ -2,6 +2,7 @@
 String methods, slices, working with files, and automated testing
 
 **Author**: Jose J. Cruz
+
 **CWID**: 10467076
 
 ## Parts
