@@ -3,6 +3,7 @@
     This class will test:
     - list_copy
     - list_intersect
+    - list_difference
 
     CONVENTIONS:
     - Max character limit per line 80
@@ -16,7 +17,7 @@
 import unittest
 from typing import List
 
-from HW06_Jose_Cruz import list_copy, list_intersect
+from HW06_Jose_Cruz import list_copy, list_intersect, list_difference
 
 
 class ListCopyTest(unittest.TestCase):
@@ -61,9 +62,31 @@ class ListIntersectTest(unittest.TestCase):
     def test_list_intersect(self) -> None:
         """Test that list_intersect"""
         self.assertEqual(list_intersect([1, 2, 3], [1, 4, 5]), [1])
+        self.assertEqual(list_intersect([1, 2, 3], [1, 2, 4]), [1, 2])
         self.assertEqual(list_intersect([], []), [])
+        self.assertEqual(list_intersect([1, 2, 3], [4, 5, 6]), [])
         self.assertEqual(list_intersect(list("abc"), list("axy")), ["a"])
         self.assertEqual(list_intersect([1, 2, 3, 1], [3, 4, 1, 5]), [1, 3])
+
+
+class ListDifferenceTest(unittest.TestCase):
+    """Test suite for list_difference"""
+
+    def test_type_error(self) -> None:
+        """Tests that only list are pass as arguments"""
+        self.assertRaises(TypeError, list_difference, 0)
+        self.assertRaises(TypeError, list_difference, "a")
+        self.assertRaises(TypeError, list_difference, 11.1)
+        self.assertRaises(TypeError, list_difference, [])
+        self.assertRaises(TypeError, list_difference, [], "a")
+        self.assertRaises(TypeError, list_difference, [], True)
+        self.assertRaises(TypeError, list_difference, [], 9)
+
+    def test_list_intersect(self) -> None:
+        """Test that list_intersect"""
+        self.assertEqual(list_difference([1, 2, 3], [1, 4, 5]), [2, 3])
+        self.assertEqual(list_difference([], []), [])
+        self.assertEqual(list_difference([1, 2, 3], [1, 2, 4]), [3])
 
 
 if __name__ == '__main__':

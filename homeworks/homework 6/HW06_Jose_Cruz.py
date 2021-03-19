@@ -8,6 +8,11 @@
         Write a function that takes two lists as parameters and returns a new
         list with the values that are included in both lists.
 
+    Part 3: list_difference(l1: List[Any], l2: List[Any]) -> List[Any]
+        Write a function list_difference(l1, l2) that takes two lists as
+        parameters and returns a new list with the values that are  in l1,
+        but NOT in l2.
+
    CONVENTIONS:
    - Max character limit per line 80
    - CapWords for class names
@@ -38,13 +43,26 @@ def list_intersect(first_list: List[Any], second_list: List[Any]) -> List[Any]:
         raise TypeError("second_list is not instance of List")
 
     """
-        1. We make copies of the list because we do not want to touch the 
-        originals
-        2. We transform them into a set to get unique values
+        1. Transform list into a set, to get unique elements and also do not
+        modify the original list
+        2. We do an union operation to combine them
         3. We transform the set back to a list
     """
-    combined_list: List[Any] = list(set(list(first_list) + list(second_list)))
+
+    combined_list: List[Any] = list(set(first_list) | set(second_list))
 
     # In the if segment we ask for items that exist in both lists
     return [item for item in combined_list if item in first_list
             and item in second_list]
+
+
+def list_difference(first_list: List[Any], second_list: List[Any]) -> List[Any]:
+    """Receives two list and return the items that exist in the first list
+    that do not exist in the second list"""
+    if not isinstance(first_list, List):
+        raise TypeError("first_list is not instance of List")
+
+    if not isinstance(second_list, List):
+        raise TypeError("second_list is not instance of List")
+
+    return [item for item in first_list if item not in second_list]
