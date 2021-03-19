@@ -19,7 +19,7 @@ import unittest
 from typing import List
 
 from HW06_Jose_Cruz import list_copy, list_intersect, list_difference, \
-    remove_vowels, check_pwd
+    remove_vowels, check_pwd, Costumer, DonutQueue
 
 
 class ListCopyTest(unittest.TestCase):
@@ -131,6 +131,34 @@ class CheckPWDTest(unittest.TestCase):
         self.assertFalse(check_pwd('1AAO'))
         self.assertTrue("1AAo")
         self.assertTrue("1789May5")
+
+
+class DonutQueueTest(unittest.TestCase):
+    """Test Donut Queue"""
+
+    def test_type_error(self) -> None:
+        """Tests that only string and boolean are pass as arguments"""
+        self.assertRaises(TypeError, Costumer, 0)
+        self.assertRaises(ValueError, Costumer, "")
+        self.assertRaises(TypeError, Costumer, "Lucas", 9)
+        self.assertRaises(TypeError, Costumer, "John", "Dow")
+
+    def test_queue(self) -> None:
+        """Tests the donut queue"""
+        queue: DonutQueue = DonutQueue()
+        self.assertIsNone(queue.next_customer())
+        queue.arrive("Sujit", False)
+        queue.arrive("Fei", False)
+        queue.arrive("Prof JR", True)
+        self.assertEqual(queue.waiting(), "Prof JR, Sujit, Fei")
+        queue.arrive("Nanda", True)
+        self.assertEqual(queue.waiting(), "Prof JR, Nanda, Sujit, Fei")
+        self.assertEqual(queue.next_customer(), "Prof JR")
+        self.assertEqual(queue.next_customer(), "Nanda")
+        self.assertEqual(queue.next_customer(), "Sujit")
+        self.assertEqual(queue.waiting(), "Fei")
+        self.assertEqual(queue.next_customer(), "Fei")
+        self.assertIsNone(queue.next_customer())
 
 
 if __name__ == '__main__':

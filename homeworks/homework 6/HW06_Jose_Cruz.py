@@ -26,6 +26,15 @@
             - The password includes at least one lower case characters
             - The password starts with at least one digit
 
+    Part 6: The DonutQueue
+        Tracks customers as they arrive at the donut shop.
+        Customers are added to the queue so they can be served in the order
+        they arrived with the exception that priority customers are served
+        before non-priority customers.
+
+        Priority customers are served in the order they arrive,
+        but before any non-priority customers
+
 
    CONVENTIONS:
    - Max character limit per line 80
@@ -37,7 +46,7 @@
    Author: Jose J. Cruz
    CWID: 10467076
 """
-from typing import List, Any
+from typing import List, Any, Optional, Callable
 
 
 def list_copy(input_list: List[any]) -> List[Any]:
@@ -103,7 +112,7 @@ def check_pwd(password: str) -> bool:
         - The password includes at least one lower case characters
     """
     if type(password) != str:
-        raise TypeError("string must be a str")
+        raise TypeError("password must be a str")
 
     # The password requires at least 4 character in total
     if len(password) < 4:
@@ -123,3 +132,99 @@ def check_pwd(password: str) -> bool:
 
     # If it reaches this point it mean that all the conditions are met
     return True
+
+
+class Costumer:
+    __slots__ = ['name', 'vip']
+    """
+        Represents a costumer in the Donut queue
+    """
+
+    def __init__(self, name: str, vip: bool = False):
+        if type(name) != str:
+            raise TypeError("name must be a str")
+
+        if len(name) == 0:
+            raise ValueError("name can't be empty")
+
+        if type(vip) != bool:
+            raise TypeError("vip must be a bool")
+
+        self.name = name
+        self.vip = vip
+
+
+class DonutQueue:
+    __slots__ = ['queue']
+    """
+        Tracks customers as they arrive at the donut shop.
+        Customers are added to the queue so they can be served in the order
+        they arrived with the exception that priority customers are served
+        before non-priority customers.
+
+        Priority customers are served in the order they arrive,
+        but before any non-priority customers
+        
+        CONVENTION:
+        - Next costumers comes from the last position of the list by using 
+        pop() 
+        - New customers are being inserted at the beginning in the list
+        
+        Meaning:
+        - [0] = Last costumer in the queue 
+        - [len(queue - 1)] = Next costumer in the queue 
+    """
+    queue: List[Costumer]
+
+    def __init__(self):
+        self.queue = []
+
+    def arrive(self, name: str, vip: bool) -> None:
+        """ Add a new costumer to the queue """
+        costumer: Costumer = Costumer(name, vip)
+
+        # If the line is empty or the costumer is not vip we just put them
+        # at the first position in the list
+        if len(self.queue) == 0 or not costumer.vip:
+            self.queue.insert(0, costumer)
+            return
+
+        next_position: int = self._next_vip_index()
+        if next_position < 0:
+            # There are no vip in the line so we just put them at the front
+            self.queue.append(costumer)
+            return
+
+            # We put the vip in the same position as the last vip
+        self.queue.insert(next_position, costumer)
+
+    def next_customer(self) -> Optional[str]:
+        """ Returns the costumer in the last position of the list"""
+        if len(self.queue) == 0:
+            return None
+
+        return self.queue.pop().name
+
+    def _next_vip_index(self) -> int:
+        """ Returns the index of the next vip costumer or -1 if not found"""
+        for index, costumer in enumerate(self.queue):
+            if costumer.vip:
+                return index
+        return -1
+
+    def waiting(self) -> Optional[str]:
+        """
+            Returns a comma separated string with the names of the customers
+            waiting in the order they will be served or None if there are
+            no customers waiting.
+        """
+        if len(self.queue) == 0:
+            return None
+
+        # Since we use the last position to get the next costumer
+        # We reverse the list for printing purposes
+        # The list is clone to not modify the original list
+        queue: List[Costumer] = self.queue.copy()
+        queue.reverse()
+
+        return ', '.join(map(lambda costumer: costumer.name, queue))
