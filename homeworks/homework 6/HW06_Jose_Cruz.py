@@ -1,4 +1,4 @@
-"""HW06: Lists
+"""HW06: Lists, Tuples and Sets
 
     Part 1: list_copy(l: List[Any]) -> List[Any]
         Write a function list_copy(l) that takes a list as a parameter and
@@ -12,6 +12,11 @@
         Write a function list_difference(l1, l2) that takes two lists as
         parameters and returns a new list with the values that are  in l1,
         but NOT in l2.
+
+    Part 4: remove_vowels(string: str) -> str
+        Write a function that given a string, splits the string on whitespace
+        into words and returns a new string that includes only the words that
+        do NOT begin with vowels.
 
    CONVENTIONS:
    - Max character limit per line 80
@@ -66,3 +71,14 @@ def list_difference(first_list: List[Any], second_list: List[Any]) -> List[Any]:
         raise TypeError("second_list is not instance of List")
 
     return [item for item in first_list if item not in second_list]
+
+
+def remove_vowels(string: str) -> str:
+    """Receive a string and return only words that do not start with a vowel"""
+    vowels: List[str] = ["a", "e", "i", "o", "u"]
+    if type(string) != str:
+        raise TypeError("string must be a str")
+
+    words: List[str] = string.split()
+
+    return ' '.join([word for word in words if word[0].lower() not in vowels])

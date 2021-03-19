@@ -4,6 +4,7 @@
     - list_copy
     - list_intersect
     - list_difference
+    - remove_vowels
 
     CONVENTIONS:
     - Max character limit per line 80
@@ -17,7 +18,8 @@
 import unittest
 from typing import List
 
-from HW06_Jose_Cruz import list_copy, list_intersect, list_difference
+from HW06_Jose_Cruz import list_copy, list_intersect, list_difference, \
+    remove_vowels
 
 
 class ListCopyTest(unittest.TestCase):
@@ -82,11 +84,32 @@ class ListDifferenceTest(unittest.TestCase):
         self.assertRaises(TypeError, list_difference, [], True)
         self.assertRaises(TypeError, list_difference, [], 9)
 
-    def test_list_intersect(self) -> None:
+    def test_list_difference(self) -> None:
         """Test that list_intersect"""
         self.assertEqual(list_difference([1, 2, 3], [1, 4, 5]), [2, 3])
         self.assertEqual(list_difference([], []), [])
         self.assertEqual(list_difference([1, 2, 3], [1, 2, 4]), [3])
+
+
+class RemoveVowelsTest(unittest.TestCase):
+    """Test suite for remove_vowels"""
+
+    def test_type_error(self) -> None:
+        """Tests that only string are pass as arguments"""
+        self.assertRaises(TypeError, remove_vowels, 0)
+        self.assertRaises(TypeError, remove_vowels, 9.99)
+        self.assertRaises(TypeError, remove_vowels, True)
+
+    def test_remove_vowels(self) -> None:
+        """Test that list_intersect"""
+        self.assertEqual(remove_vowels("Amy is my favorite daughter"),
+                         "my favorite daughter")
+        self.assertEqual(remove_vowels("Jan is my best friend"),
+                         "Jan my best friend")
+        self.assertEqual(remove_vowels("Once upon a time"), "time")
+        self.assertEqual(remove_vowels(""), "")
+        # Overwatch reference
+        self.assertEqual(remove_vowels("Heroes never die"), "Heroes never die")
 
 
 if __name__ == '__main__':
