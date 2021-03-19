@@ -19,7 +19,7 @@ import unittest
 from typing import List
 
 from HW06_Jose_Cruz import list_copy, list_intersect, list_difference, \
-    remove_vowels
+    remove_vowels, check_pwd
 
 
 class ListCopyTest(unittest.TestCase):
@@ -85,7 +85,7 @@ class ListDifferenceTest(unittest.TestCase):
         self.assertRaises(TypeError, list_difference, [], 9)
 
     def test_list_difference(self) -> None:
-        """Test that list_intersect"""
+        """Test that list_difference"""
         self.assertEqual(list_difference([1, 2, 3], [1, 4, 5]), [2, 3])
         self.assertEqual(list_difference([], []), [])
         self.assertEqual(list_difference([1, 2, 3], [1, 2, 4]), [3])
@@ -101,7 +101,7 @@ class RemoveVowelsTest(unittest.TestCase):
         self.assertRaises(TypeError, remove_vowels, True)
 
     def test_remove_vowels(self) -> None:
-        """Test that list_intersect"""
+        """Test list_intersect"""
         self.assertEqual(remove_vowels("Amy is my favorite daughter"),
                          "my favorite daughter")
         self.assertEqual(remove_vowels("Jan is my best friend"),
@@ -110,6 +110,27 @@ class RemoveVowelsTest(unittest.TestCase):
         self.assertEqual(remove_vowels(""), "")
         # Overwatch reference
         self.assertEqual(remove_vowels("Heroes never die"), "Heroes never die")
+
+
+class CheckPWDTest(unittest.TestCase):
+    """Test suite for check_pwd"""
+
+    def test_type_error(self) -> None:
+        """Tests that only string are pass as arguments"""
+        self.assertRaises(TypeError, check_pwd, 0)
+        self.assertRaises(TypeError, check_pwd, 9.99)
+        self.assertRaises(TypeError, check_pwd, True)
+
+    def test_check_pwd(self) -> None:
+        """Test check_pwd"""
+        self.assertFalse(check_pwd(""))
+        self.assertFalse(check_pwd("AAo"))
+        self.assertFalse(check_pwd("A1Ao"))
+        self.assertFalse(check_pwd('AAo1'))
+        self.assertFalse(check_pwd('1Aao'))
+        self.assertFalse(check_pwd('1AAO'))
+        self.assertTrue("1AAo")
+        self.assertTrue("1789May5")
 
 
 if __name__ == '__main__':

@@ -18,6 +18,15 @@
         into words and returns a new string that includes only the words that
         do NOT begin with vowels.
 
+    Part 5: check_pwd(password: str) -> bool
+        Write a function that takes a string and return a bool
+
+        The following conditions needs to be met:
+            - The password includes at least two upper case characters
+            - The password includes at least one lower case characters
+            - The password starts with at least one digit
+
+
    CONVENTIONS:
    - Max character limit per line 80
    - CapWords for class names
@@ -82,3 +91,35 @@ def remove_vowels(string: str) -> str:
     words: List[str] = string.split()
 
     return ' '.join([word for word in words if word[0].lower() not in vowels])
+
+
+def check_pwd(password: str) -> bool:
+    """ Receive a string password and return a boolean depending if is valid
+    or not.
+
+    The following conditions needs to be met to be valid:
+        - The password starts with at least one digit
+        - The password includes at least two upper case characters
+        - The password includes at least one lower case characters
+    """
+    if type(password) != str:
+        raise TypeError("string must be a str")
+
+    # The password requires at least 4 character in total
+    if len(password) < 4:
+        return False
+
+    # Check if the first letter is a digit
+    if not password[0].isdigit():
+        return False
+
+    # Check if there is at least 2 upper case
+    if len([letter for letter in password if letter.isupper()]) < 2:
+        return False
+
+    # Check if there is at least 1 lower case
+    if len([letter for letter in password if letter.islower()]) < 1:
+        return False
+
+    # If it reaches this point it mean that all the conditions are met
+    return True
