@@ -35,6 +35,8 @@
         Priority customers are served in the order they arrive,
         but before any non-priority customers
 
+    Optional Practice Problem: reorder(l: List[Any]) -> List[Any]
+
 
    CONVENTIONS:
    - Max character limit per line 80
@@ -183,7 +185,7 @@ class DonutQueue:
         """ Add a new costumer to the queue """
         costumer: Costumer = Costumer(name, vip)
 
-        # If the line is empty or the costumer is not vip we just put them
+        # If the queue is empty or the costumer is not vip we just put them
         # at the first position in the list
         if len(self.queue) == 0 or not costumer.vip:
             self.queue.insert(0, costumer)
@@ -228,3 +230,18 @@ class DonutQueue:
         queue.reverse()
 
         return ', '.join(map(lambda costumer: costumer.name, queue))
+
+
+def reorder(input_list: List[Any]) -> List[Any]:
+    """ Use insertion sort to sort an incoming list """
+    if not isinstance(input_list, List):
+        raise TypeError("input_list is not instance of List")
+    sorted_list: List[Any] = []
+    for item in input_list:
+        for index, sorted_item in enumerate(sorted_list):
+            if sorted_item > item:
+                sorted_list.insert(index, item)
+                break
+        else:
+            sorted_list.append(item)
+    return sorted_list

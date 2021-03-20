@@ -19,7 +19,7 @@ import unittest
 from typing import List
 
 from HW06_Jose_Cruz import list_copy, list_intersect, list_difference, \
-    remove_vowels, check_pwd, Costumer, DonutQueue
+    remove_vowels, check_pwd, Costumer, DonutQueue, reorder
 
 
 class ListCopyTest(unittest.TestCase):
@@ -159,6 +159,24 @@ class DonutQueueTest(unittest.TestCase):
         self.assertEqual(queue.waiting(), "Fei")
         self.assertEqual(queue.next_customer(), "Fei")
         self.assertIsNone(queue.next_customer())
+
+
+class ReorderTest(unittest.TestCase):
+    """Test suite for reorder"""
+
+    def test_type_error(self) -> None:
+        """Tests that only list are pass as arguments"""
+        self.assertRaises(TypeError, reorder, 0)
+        self.assertRaises(TypeError, reorder, "a")
+        self.assertRaises(TypeError, reorder, 11.1)
+
+    def test_reorder(self) -> None:
+        """Test reorder"""
+        self.assertEqual(reorder([1, 5, 3, 3]), [1, 3, 3, 5])
+        self.assertEqual(reorder([5, 4, 3, 2, 1]), [1, 2, 3, 4, 5])
+        self.assertEqual(reorder([5, 5, 5, 1]), [1, 5, 5, 5])
+        self.assertEqual(reorder([2, 2, 5, 1]), [1, 2, 2, 5])
+        self.assertEqual(reorder(list('aiueo')), ['a', 'e', 'i', 'o', 'u'])
 
 
 if __name__ == '__main__':
