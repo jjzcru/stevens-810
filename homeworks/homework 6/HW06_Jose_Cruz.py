@@ -36,7 +36,12 @@
         but before any non-priority customers
 
     Optional Practice Problem: reorder(l: List[Any]) -> List[Any]
-
+        Write a function reorder(l: List[Any]) -> List[Any]  that returns a 
+        copy of the argument sorted using a list and the algorithm discussed 
+        in class. You MAY NOT simply use Python’s sort utilities. The idea is 
+        to start with an empty list, and then iterate through each of the 
+        elements in the list to be sorted, inserting each item in the proper 
+        spot in the new list.
 
    CONVENTIONS:
    - Max character limit per line 80
