@@ -28,7 +28,8 @@ def anagrams_lst(first_word: str, second_word: str) -> bool:
     if len(first_word) == 0 or len(second_word) == 0:
         raise ValueError("words can't be empty")
 
-    return sorted(list(first_word.lower())) == sorted(list(second_word.lower()))
+    return sorted(list(first_word.lower().replace(" ", ""))) == \
+           sorted(list(second_word.lower().replace(" ", "")))
 
 
 def anagrams_dd(first_word: str, second_word: str) -> bool:
@@ -45,10 +46,10 @@ def anagrams_dd(first_word: str, second_word: str) -> bool:
 
     container: Dict[str, int] = defaultdict(int)
 
-    for char in first_word.lower():
+    for char in first_word.lower().replace(" ", ""):
         container[char] = container.get(char, 0) + 1
 
-    for char in second_word.lower():
+    for char in second_word.lower().replace(" ", ""):
         container[char] = container.get(char, 0) - 1
 
     for char in container.keys():
@@ -70,4 +71,16 @@ def anagrams_cntr(first_word: str, second_word: str) -> bool:
     if len(first_word) == 0 or len(second_word) == 0:
         raise ValueError("words can't be empty")
 
-    return Counter(first_word.lower()) == Counter(second_word.lower())
+    return Counter(first_word.lower().replace(" ", "")) == \
+           Counter(second_word.lower().replace(" ", ""))
+
+
+def covers_alphabet(sentence: str) -> bool:
+    """Returns True if sentence includes at least one instance of every
+    character in the alphabet or False using only Python sets"""
+    if type(sentence) != str:
+        raise TypeError("sentence must be a str")
+
+    return set(''.join(filter(str.isalpha,
+                              sentence.lower().replace(" ", "")))) == \
+           set('abcdefghijklmnopqrstuvwxyz')

@@ -17,7 +17,8 @@
 """
 import unittest
 
-from HW07_Jose_Cruz import anagrams_lst, anagrams_dd, anagrams_cntr
+from HW07_Jose_Cruz import anagrams_lst, anagrams_dd, anagrams_cntr, \
+    covers_alphabet
 
 
 class AnagramTest(unittest.TestCase):
@@ -78,3 +79,22 @@ class AnagramTest(unittest.TestCase):
         self.assertTrue(anagrams_cntr('night', 'thing'))
         self.assertFalse(anagrams_cntr('hello', 'ollehh'))
         self.assertFalse(anagrams_cntr('hello', 'ollehh'))
+
+    def test_covers_alphabet(self) -> None:
+        """Tests that only list are pass as arguments"""
+        self.assertRaises(TypeError, covers_alphabet, 0)
+        self.assertRaises(TypeError, covers_alphabet, True)
+        self.assertRaises(TypeError, covers_alphabet, 11.1)
+        self.assertRaises(TypeError, covers_alphabet, [])
+        self.assertTrue(covers_alphabet('abcdefghijklmnopqrstuvwxyz'))
+        self.assertTrue(covers_alphabet('aabbcdefghijklmnopqrstuvwxyzzabc'))
+        self.assertTrue(covers_alphabet('The quick brown fox jumps over the '
+                                        'lazy dog'))
+        self.assertTrue(covers_alphabet('We promptly judged antique ivory '
+                                        'buckles for the next prize'))
+        self.assertFalse(covers_alphabet('abcdefghijklmnopqrstuvwxy'))
+        self.assertFalse(covers_alphabet('bcdefghijklmnopqrstuvwxyz'))
+        self.assertFalse(covers_alphabet(''))
+        self.assertFalse(covers_alphabet('xyz'))
+        self.assertTrue(covers_alphabet('The quick, brown, fox; jumps over '
+                                        'the lazy dog!'))
