@@ -105,9 +105,9 @@ def covers_alphabet(sentence: str) -> bool:
     if type(sentence) != str:
         raise TypeError("sentence must be a str")
 
-    return set(''.join(filter(str.isalpha,
+    return set("".join(filter(str.isalpha,
                               sentence.lower().replace(" ", "")))) == \
-           set('abcdefghijklmnopqrstuvwxyz')
+           set("abcdefghijklmnopqrstuvwxyz")
 
 
 def hello(log):
