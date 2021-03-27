@@ -16,9 +16,8 @@
    CWID: 10467076
 """
 import unittest
-from typing import List
 
-from HW07_Jose_Cruz import anagrams_lst
+from HW07_Jose_Cruz import anagrams_lst, anagrams_dd
 
 
 class AnagramTest(unittest.TestCase):
@@ -41,3 +40,21 @@ class AnagramTest(unittest.TestCase):
         self.assertTrue(anagrams_lst('night', 'thing'))
         self.assertFalse(anagrams_lst('hello', 'ollehh'))
         self.assertFalse(anagrams_lst('hello', 'ollehh'))
+
+    def test_anagrams_dd(self) -> None:
+        """Tests that only list are pass as arguments"""
+        self.assertRaises(TypeError, anagrams_dd, 0)
+        self.assertRaises(TypeError, anagrams_dd, 0, 20)
+        self.assertRaises(TypeError, anagrams_dd, True)
+        self.assertRaises(TypeError, anagrams_dd, True, '')
+        self.assertRaises(TypeError, anagrams_dd, 11.1)
+        self.assertRaises(TypeError, anagrams_dd, 11.1, [])
+        self.assertRaises(ValueError, anagrams_dd, '', '')
+        self.assertRaises(ValueError, anagrams_dd, '', '111')
+        self.assertRaises(ValueError, anagrams_dd, '111', '')
+        self.assertTrue(anagrams_dd('hello', 'olleh'))
+        self.assertTrue(anagrams_dd('hello', 'holle'))
+        self.assertTrue(anagrams_dd('dusty', 'study'))
+        self.assertTrue(anagrams_dd('night', 'thing'))
+        self.assertFalse(anagrams_dd('hello', 'ollehh'))
+        self.assertFalse(anagrams_dd('hello', 'ollehh'))
