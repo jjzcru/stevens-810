@@ -144,6 +144,7 @@ class WebAnalyzerTest(unittest.TestCase):
         self.assertRaises(ValueError, web_analyzer, [("example", "example",
                                                       "example")])
         self.assertRaises(ValueError, web_analyzer, [(True, "Test")])
+        self.assertRaises(ValueError, web_analyzer, [("", "")])
         self.assertEqual(web_analyzer([]), [])
         self.assertEqual(web_analyzer(weblogs), summary)
 
