@@ -12,7 +12,7 @@
    Author: Jose J. Cruz
    CWID: 10467076
 """
-from collections import defaultdict
+from collections import defaultdict, Counter
 from typing import Dict
 
 
@@ -45,10 +45,10 @@ def anagrams_dd(first_word: str, second_word: str) -> bool:
 
     container: Dict[str, int] = defaultdict(int)
 
-    for char in first_word:
+    for char in first_word.lower():
         container[char] = container.get(char, 0) + 1
 
-    for char in second_word:
+    for char in second_word.lower():
         container[char] = container.get(char, 0) - 1
 
     for char in container.keys():
@@ -56,3 +56,18 @@ def anagrams_dd(first_word: str, second_word: str) -> bool:
             return False
 
     return True
+
+
+def anagrams_cntr(first_word: str, second_word: str) -> bool:
+    """Functions returns True if the strings are anagram and
+    False if not (using Counter)"""
+    if type(first_word) != str:
+        raise TypeError("first_word must be a str")
+
+    if type(second_word) != str:
+        raise TypeError("second_word must be a str")
+
+    if len(first_word) == 0 or len(second_word) == 0:
+        raise ValueError("words can't be empty")
+
+    return Counter(first_word.lower()) == Counter(second_word.lower())
