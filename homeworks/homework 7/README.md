@@ -31,12 +31,12 @@ with Microsoft.
 
 ### Part 1.2: Anagrams using `defaultdict`
 
-anagrams_dd(str1: str, str2: str) -> bool
+`anagrams_dd(str1: str, str2: str) -> bool`
 
 Part 1.1 was fun but didn’t require much programming so we’ll look at another 
 solution to determine if two strings are anagrams using `defaultdict`. Write a 
-function `anagrams_dd(str1, str2)` that also returns True or False, but uses the 
-following strategy:
+function `anagrams_dd(str1, str2)` that also returns `True` or `False`, but 
+uses the following strategy:
 
 1. Create a **defaultdict of integers**, `dd`
 2. Go through str1, adding each character to dd as the key and incrementing the 
@@ -76,7 +76,8 @@ includes at least one instance of every character in the alphabet or False
 
 Hints:
 - Be sure to convert the input string to lower case before comparing.
-- Here’s a list of all characters that you can copy/paste rather than typing it yourself: abcdefghijklmnopqrstuvwxyz
+- Here’s a list of all characters that you can copy/paste rather than typing 
+it yourself: `abcdefghijklmnopqrstuvwxyz`
 - Here’s a few strings that do cover all the characters in the alphabet:
     - `"abcdefghijklmnopqrstuvwxyz"`
     - `"aabbcdefghijklmnopqrstuvwxyzzabc"`
@@ -84,7 +85,7 @@ Hints:
     - `"We promptly judged antique ivory buckles for the next prize"`
 - The string tested against the alphabet must include at least all of the 
   characters in the alphabet, **but may also contain others**, 
-  E.g. the sentence, “The quick, brown, fox; jumps over the lazy dog!” is not 
+  E.g. the sentence, `“The quick, brown, fox; jumps over the lazy dog!”` is not 
   grammatically correct but it does cover the alphabet.
 
 ## Part 3: Web Analyzer

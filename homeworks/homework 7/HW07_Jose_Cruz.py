@@ -1,14 +1,16 @@
 """HW07: Python Containers
 
     Part 1: Anagrams
-    Part 1: Covers Alphabet
-    Part 1: Web Analyzer
+        Part 1.1: Using strings and lists
+        Part 1.2: Using dictionaries
+        Part 1.3: Using Counters
+    Part 2: Covers Alphabet
+    Part 3: Web Analyzer
     
     CONVENTIONS:
         - Max character limit per line 80
         - CapWords for class names
         - snake_case for variables and functions
-        - function that start with underscore are private
         - double quotes for strings
 
    Author: Jose J. Cruz
@@ -30,8 +32,14 @@ def anagrams_lst(first_word: str, second_word: str) -> bool:
     if len(first_word) == 0 or len(second_word) == 0:
         raise ValueError("words can't be empty")
 
-    return sorted(list(first_word.lower().replace(" ", ""))) == \
-           sorted(list(second_word.lower().replace(" ", "")))
+    first_word = first_word.lower().replace(" ", "")
+    second_word = second_word.lower().replace(" ", "")
+
+    for char in (first_word + second_word):
+        if not char.isalpha():
+            raise ValueError("numbers and symbols are not allowed")
+
+    return sorted(list(first_word)) == sorted(list(second_word))
 
 
 def anagrams_dd(first_word: str, second_word: str) -> bool:
@@ -46,12 +54,19 @@ def anagrams_dd(first_word: str, second_word: str) -> bool:
     if len(first_word) == 0 or len(second_word) == 0:
         raise ValueError("words can't be empty")
 
+    first_word = first_word.lower().replace(" ", "")
+    second_word = second_word.lower().replace(" ", "")
+
+    for char in (first_word + second_word):
+        if not char.isalpha():
+            raise ValueError("numbers and symbols are not allowed")
+
     container: Dict[str, int] = defaultdict(int)
 
-    for char in first_word.lower().replace(" ", ""):
+    for char in first_word:
         container[char] = container.get(char, 0) + 1
 
-    for char in second_word.lower().replace(" ", ""):
+    for char in second_word:
         container[char] = container.get(char, 0) - 1
 
     for char in container.keys():
@@ -73,8 +88,14 @@ def anagrams_cntr(first_word: str, second_word: str) -> bool:
     if len(first_word) == 0 or len(second_word) == 0:
         raise ValueError("words can't be empty")
 
-    return Counter(first_word.lower().replace(" ", "")) == \
-           Counter(second_word.lower().replace(" ", ""))
+    first_word = first_word.lower().replace(" ", "")
+    second_word = second_word.lower().replace(" ", "")
+
+    for char in (first_word + second_word):
+        if not char.isalpha():
+            raise ValueError("numbers and symbols are not allowed")
+
+    return Counter(first_word) == Counter(second_word)
 
 
 def covers_alphabet(sentence: str) -> bool:
@@ -83,9 +104,9 @@ def covers_alphabet(sentence: str) -> bool:
     if type(sentence) != str:
         raise TypeError("sentence must be a str")
 
-    return set(''.join(filter(str.isalpha,
+    return set("".join(filter(str.isalpha,
                               sentence.lower().replace(" ", "")))) == \
-           set('abcdefghijklmnopqrstuvwxyz')
+           set("abcdefghijklmnopqrstuvwxyz")
 
 
 def hello(log):
@@ -113,7 +134,7 @@ def web_analyzer(weblogs: List[Tuple[str, str]]) -> List[Tuple[str, List[str]]]:
         if type(weblog[0]) != str or type(weblog[1]) != str:
             raise ValueError("log values must be strings")
 
-    # Real Program
+    # Real Program (3 Line solution 😬)
     records: Dict[str, Set] = defaultdict(set)
     list(map(lambda log: records[log[1]].add(log[0]), weblogs))
     return [(w, sorted(list(e))) for w, e in sorted(records.items())]
