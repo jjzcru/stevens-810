@@ -1,6 +1,8 @@
-"""HW06: Lists, Tuples and Sets
+"""HW07: Python Containers
 
     Part 1: Anagrams
+    Part 1: Covers Alphabet
+    Part 1: Web Analyzer
     
     CONVENTIONS:
         - Max character limit per line 80
@@ -13,7 +15,7 @@
    CWID: 10467076
 """
 from collections import defaultdict, Counter
-from typing import Dict
+from typing import Dict, List, Tuple, Set
 
 
 def anagrams_lst(first_word: str, second_word: str) -> bool:
@@ -84,3 +86,34 @@ def covers_alphabet(sentence: str) -> bool:
     return set(''.join(filter(str.isalpha,
                               sentence.lower().replace(" ", "")))) == \
            set('abcdefghijklmnopqrstuvwxyz')
+
+
+def hello(log):
+    return log
+
+
+def web_analyzer(weblogs: List[Tuple[str, str]]) -> List[Tuple[str, List[str]]]:
+    """Create a summary of the weblogs with each distinct site and a sorted
+    list of names of distinct people who visited that site"""
+
+    # Defensive programming / Type checking section
+    if not isinstance(weblogs, List):
+        raise TypeError("weblogs is not instance of List")
+
+    if len(weblogs) == 0:
+        return []
+
+    for weblog in weblogs:
+        if not isinstance(weblog, Tuple):
+            raise TypeError("log is not instance of Tuple")
+
+        if len(weblog) != 2:
+            raise ValueError("log can only have a length of two")
+
+        if type(weblog[0]) != str or type(weblog[1]) != str:
+            raise ValueError("log values must be strings")
+
+    # Real Program
+    records: Dict[str, Set] = defaultdict(set)
+    list(map(lambda log: records[log[1]].add(log[0]), weblogs))
+    return [(w, sorted(list(e))) for w, e in sorted(records.items())]
