@@ -17,7 +17,7 @@
    CWID: 10467076
 """
 import unittest
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 from HW07_Jose_Cruz import anagrams_lst, anagrams_dd, anagrams_cntr, \
     covers_alphabet, web_analyzer
 
@@ -26,7 +26,7 @@ class AnagramTest(unittest.TestCase):
     """Test suite for anagrams"""
 
     def test_anagrams_lst(self) -> None:
-        """Tests that only list are pass as arguments"""
+        """Tests that anagrams using strings and lists"""
         self.assertRaises(TypeError, anagrams_lst, 0)
         self.assertRaises(TypeError, anagrams_lst, 0, 20)
         self.assertRaises(TypeError, anagrams_lst, True)
@@ -46,7 +46,7 @@ class AnagramTest(unittest.TestCase):
         self.assertFalse(anagrams_lst("hello", "ollehh"))
 
     def test_anagrams_dd(self) -> None:
-        """Tests that only list are pass as arguments"""
+        """Tests that anagrams using dictionaries"""
         self.assertRaises(TypeError, anagrams_dd, 0)
         self.assertRaises(TypeError, anagrams_dd, 0, 20)
         self.assertRaises(TypeError, anagrams_dd, True)
@@ -56,7 +56,7 @@ class AnagramTest(unittest.TestCase):
         self.assertRaises(ValueError, anagrams_dd, "", "")
         self.assertRaises(ValueError, anagrams_dd, "", "111")
         self.assertRaises(ValueError, anagrams_dd, "111", "")
-        self.assertRaises(ValueError, anagrams_lst, "aaaa", "a1aaa")
+        self.assertRaises(ValueError, anagrams_dd, "aaaa", "a1aaa")
         self.assertTrue(anagrams_dd("hello", "olleh"))
         self.assertTrue(anagrams_dd("hello", "holle"))
         self.assertTrue(anagrams_dd("dusty", "study"))
@@ -68,7 +68,7 @@ class AnagramTest(unittest.TestCase):
         self.assertFalse(anagrams_lst("hello", "ollehh"))
 
     def test_anagrams_cntr(self) -> None:
-        """Tests that only list are pass as arguments"""
+        """Tests anagrams using Counter"""
         self.assertRaises(TypeError, anagrams_cntr, 0)
         self.assertRaises(TypeError, anagrams_cntr, 0, 20)
         self.assertRaises(TypeError, anagrams_cntr, True)
@@ -78,7 +78,7 @@ class AnagramTest(unittest.TestCase):
         self.assertRaises(ValueError, anagrams_cntr, "", "")
         self.assertRaises(ValueError, anagrams_cntr, "", "111")
         self.assertRaises(ValueError, anagrams_cntr, "111", "")
-        self.assertRaises(ValueError, anagrams_lst, "aaaa", "a1aaa")
+        self.assertRaises(ValueError, anagrams_cntr, "aaaa", "a1aaa")
         self.assertTrue(anagrams_cntr("hello", "olleh"))
         self.assertTrue(anagrams_cntr("hello", "holle"))
         self.assertTrue(anagrams_cntr("dusty", "study"))
@@ -115,7 +115,7 @@ class WebAnalyzerTest(unittest.TestCase):
     """Test suite for Web analyzer"""
 
     def test_web_analyzer(self) -> None:
-        """Tests that only list are pass as arguments"""
+        """Tests web_analyzer function"""
         weblogs: List[Tuple[str, str]] = [
             ("Nanda", "google.com"),
             ("Maha", "google.com"),
@@ -125,15 +125,15 @@ class WebAnalyzerTest(unittest.TestCase):
             ("Nanda", "python.org"),
             ("Fei", "dzone.com"),
             ("Nanda", "google.com"),
-            ("Maha", "google.com"), ]
-
+            ("Maha", "google.com"),
+        ]
         summary: List[Tuple[str, List[str]]] = [
             ("dzone.com", ["Fei"]),
             ("google.com", ["Maha", "Nanda"]),
-            ("python.org", ["Fei", "Nanda"]), ]
+            ("python.org", ["Fei", "Nanda"]),
+        ]
 
         self.assertRaises(TypeError, web_analyzer, 0)
-
         self.assertRaises(TypeError, web_analyzer, True)
         self.assertRaises(TypeError, web_analyzer, 11.1)
         self.assertRaises(TypeError, web_analyzer, ["google.com"])

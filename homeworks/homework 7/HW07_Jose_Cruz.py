@@ -11,7 +11,6 @@
         - Max character limit per line 80
         - CapWords for class names
         - snake_case for variables and functions
-        - function that start with underscore are private
         - double quotes for strings
 
    Author: Jose J. Cruz
@@ -135,7 +134,7 @@ def web_analyzer(weblogs: List[Tuple[str, str]]) -> List[Tuple[str, List[str]]]:
         if type(weblog[0]) != str or type(weblog[1]) != str:
             raise ValueError("log values must be strings")
 
-    # Real Program
+    # Real Program (3 Line solution 😬)
     records: Dict[str, Set] = defaultdict(set)
     list(map(lambda log: records[log[1]].add(log[0]), weblogs))
     return [(w, sorted(list(e))) for w, e in sorted(records.items())]
