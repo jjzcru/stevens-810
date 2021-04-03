@@ -93,9 +93,9 @@ class FileReaderTest(unittest.TestCase):
 
 
 class FileAnalyzerTest(unittest.TestCase):
-    """Test suite for anagrams"""
+    """Test suite for FileAnalyzer"""
 
-    def test_anagrams_lst(self) -> None:
+    def test_file_analyzer(self) -> None:
         self.assertTrue(True)
 
 

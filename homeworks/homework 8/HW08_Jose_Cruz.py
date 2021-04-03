@@ -17,6 +17,7 @@ import os
 from pathlib import Path
 from datetime import datetime, timedelta, date
 from typing import Dict, Tuple, Iterator, List
+from prettytable import PrettyTable
 
 
 def date_arithmetic() -> Tuple[datetime, datetime, int]:
@@ -46,8 +47,8 @@ def date_arithmetic() -> Tuple[datetime, datetime, int]:
            days_passed
 
 
-def file_reader(path: str, fields: int, sep: str = ',', header: bool = False) \
-        -> Iterator[List[str]]:
+def file_reader(path: str, fields: int, sep: str = ",",
+                header: bool = False) -> Iterator[List[str]]:
     """Return a generator using a file and split using separators"""
     # Performing type validation
     if type(path) != str:
@@ -104,20 +105,147 @@ def file_reader(path: str, fields: int, sep: str = ',', header: bool = False) \
             f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
 
 
-class FileAnalyzer:
-    """ Your docstring should go here for the description of the class."""
+class FileData:
+    __slots__ = ['name', 'lines', 'characters', 'functions', 'classes']
+    """
+        Represents a object summary from the file
+    """
 
-    def __init__(self, directory: str) -> None:
-        """ Your docstring should go here for the description of the method."""
+    def __init__(self, name: str, lines: int = 0, characters: int = 0,
+                 functions: int = 0, classes: int = 0) -> None:
+        if type(name) != str:
+            raise TypeError("name must be a str")
+
+        if len(name) == 0:
+            raise ValueError("name can't be empty")
+
+        if type(lines) != int:
+            raise TypeError("lines must be an int")
+
+        if type(characters) != int:
+            raise TypeError("characters must be an int")
+
+        if type(functions) != int:
+            raise TypeError("functions must be an int")
+
+        if type(classes) != int:
+            raise TypeError("classes must be an int")
+
+        self.name = name
+        self.lines = lines
+        self.characters = characters
+        self.functions = functions
+        self.classes = classes
+
+
+def _is_a_python_file(path: str) -> bool:
+    """Check if the path is a python file"""
+    file_path: Path = Path(path)
+    if not os.path.exists(path) or not file_path.is_file():
+        return False
+
+    extension = os.path.splitext(path)[1][1:]
+    return extension == 'py'
+
+
+def _analyze_file(path: str) -> FileData:
+    """Get the information data from a python file path"""
+    # Verifies that the file exist
+    if not os.path.exists(path):
+        raise FileNotFoundError(f'the path {path} do not exist')
+
+    file_path = Path(path)
+    if not file_path.is_file():
+        raise IsADirectoryError(f'the path {path} is a directory')
+
+    data: FileData = FileData(name=path)
+
+    with open(path, "r") as file:
+        for line in file.readlines():
+            # Count lines
+            data.lines += 1
+
+            # Remove break lines
+            line = line.strip('\n')
+
+            # The line is empty so we skip it
+            if len(line) == 0:
+                continue
+
+            # Count characters in line
+            data.characters += len(list(line.replace(" ", "")))
+
+            # Remove the extra space in the beginning of the line
+            # Count functions
+            if line.strip().startswith('def '):
+                data.functions += 1
+                continue
+
+            # Remove the extra space in the beginning of the line
+            # Count classes
+            if line.strip().startswith('class '):
+                data.classes += 1
+                continue
+        else:
+            file.close()
+
+    return data
+
+
+class FileAnalyzer:
+    """ Given a directory name, searches that directory for Python files
+    and analyze results
+        (i.e. files ending with .py)."""
+
+    def __init__(self, directory: str = os.curdir) -> None:
+        """ Constructor for the analyzer"""
+        if not os.path.exists(directory):
+            raise FileNotFoundError(f'path {directory} do not exist')
+
+        file_path: Path = Path(directory)
+        if not file_path.is_dir():
+            raise ValueError(f'path {directory} is not a directory')
+
         self.directory: str = directory  # NOT mandatory!
+
         self.files_summary: Dict[str, Dict[str, int]] = dict()
 
-        self.analyze_files()  # summerize the python files data
+        self.analyze_files()
 
     def analyze_files(self) -> None:
-        """ Your docstring should go here for the description of the method."""
-        pass  # implement your code here
+        """ Analyze a directory to get the files data"""
+        files: List[str] = os.listdir(self.directory)
+        files_data: List[FileData] = [_analyze_file(file)
+                                      for file in files
+                                      if _is_a_python_file(file)]
+        self.files_summary = {
+            data.name: {
+                "class": data.classes,
+                "function": data.functions,
+                "line": data.lines,
+                "char": data.characters
+            } for data in files_data
+        }
 
+    @staticmethod
     def pretty_print(self) -> None:
-        """ Your docstring should go here for the description of the method."""
-        pass  # implement your code here
+        """Display the summary as a table"""
+        table = PrettyTable()
+        table.field_names = [
+            "File Name",
+            "Classes",
+            "Functions",
+            "Lines",
+            "Characters"
+        ]
+
+        for file_name, data in self.files_summary.items():
+            table.add_row([
+                file_name,
+                data['class'],
+                data['function'],
+                data['line'],
+                data['char'],
+            ])
+
+        print(table)
