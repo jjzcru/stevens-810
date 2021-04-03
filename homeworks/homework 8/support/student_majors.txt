@@ -1,0 +1,4 @@
+CWID|Name|Major
+123|Jin He|Computer Science
+234|Nanda Koka|Software Engineering
+345|Benji Cai|Software Engineering

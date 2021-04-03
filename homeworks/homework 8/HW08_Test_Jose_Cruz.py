@@ -17,6 +17,7 @@
    CWID: 10467076
 """
 import unittest
+from typing import Tuple, List
 from datetime import datetime
 from HW08_Jose_Cruz import date_arithmetic, file_reader, FileAnalyzer
 
@@ -31,7 +32,7 @@ class DateArithmeticTest(unittest.TestCase):
         diff: int
 
         three_days_after_02272020, three_days_after_02272019, \
-                diff = date_arithmetic()
+            diff = date_arithmetic()
 
         self.assertEqual(three_days_after_02272020, datetime(2020, 3, 1))
         self.assertEqual(three_days_after_02272019, datetime(2019, 3, 2))
@@ -39,10 +40,56 @@ class DateArithmeticTest(unittest.TestCase):
 
 
 class FileReaderTest(unittest.TestCase):
-    """Test suite for anagrams"""
+    """Test suite for file_reader"""
 
-    def test_anagrams_lst(self) -> None:
-        self.assertTrue(True)
+    def test_file_reader(self) -> None:
+        """Tests the function file_reader"""
+        file_path: str = "./support/student_majors.txt"
+        error_file_path: str = "./support/error.txt"
+        dir_file_path: str = "./support"
+        invalid_file_path: str = "./support/non_existent.txt"
+
+        with self.assertRaises(TypeError):
+            tuple(file_reader(0, 0))
+
+        with self.assertRaises(TypeError):
+            tuple(file_reader(True, ""))
+
+        with self.assertRaises(TypeError):
+            tuple(file_reader(11.5, False))
+
+        with self.assertRaises(FileNotFoundError):
+            tuple(file_reader(invalid_file_path, 20))
+
+        with self.assertRaises(IsADirectoryError):
+            tuple(file_reader(dir_file_path, 20))
+
+        with self.assertRaises(ValueError):
+            list(file_reader(file_path, 2, "|", True))
+
+        with self.assertRaises(ValueError):
+            list(file_reader(error_file_path, 2, "|", True))
+
+        response: List[List[str]] = list(file_reader(file_path, 3, "|"))
+        self.assertEqual(response, [
+            ("CWID", "Name", "Major"),
+            ("123", "Jin He", "Computer Science"),
+            ("234", "Nanda Koka", "Software Engineering"),
+            ("345", "Benji Cai", "Software Engineering")
+        ])
+
+        response = list(file_reader(file_path, 3, "|", True))
+        self.assertEqual(response, [
+            ("123", "Jin He", "Computer Science"),
+            ("234", "Nanda Koka", "Software Engineering"),
+            ("345", "Benji Cai", "Software Engineering")
+        ])
+
+        # self.assertRaises(TypeError, file_reader, True, "")
+        # self.assertRaises(TypeError, file_reader, 11.1, True)
+        # self.assertRaises(TypeError, file_reader, file_path)
+        # self.assertRaises(FileNotFoundError, file_reader, invalid_file_path)
+        # self.assertRaises(IOError, file_reader, dir_file_path)
 
 
 class FileAnalyzerTest(unittest.TestCase):

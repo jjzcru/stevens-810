@@ -13,8 +13,10 @@
    Author: Jose J. Cruz
    CWID: 10467076
 """
+import os
+from pathlib import Path
 from datetime import datetime, timedelta, date
-from typing import Dict, Tuple, Iterator
+from typing import Dict, Tuple, Iterator, List
 
 
 def date_arithmetic() -> Tuple[datetime, datetime, int]:
@@ -44,9 +46,62 @@ def date_arithmetic() -> Tuple[datetime, datetime, int]:
            days_passed
 
 
-def file_reader(path, fields, sep=',', header=False) -> Iterator[Tuple[str]]:
-    """ Your docstring should go here for the description of the function."""
-    pass  # implement your code here
+def file_reader(path: str, fields: int, sep: str = ',', header: bool = False) \
+        -> Iterator[List[str]]:
+    """Return a generator using a file and split using separators"""
+    # Performing type validation
+    if type(path) != str:
+        raise TypeError("Value must be a str")
+
+    # Verifies that the file exist
+    if not os.path.exists(path):
+        raise FileNotFoundError(f'the path {path} do not exist')
+
+    file_path = Path(path)
+    if not file_path.is_file():
+        raise IsADirectoryError(f'the path {path} is a directory')
+
+    if type(fields) != int:
+        raise TypeError("fields must be an int")
+
+    if fields == 0:
+        raise TypeError("fields must be bigger than 0")
+
+    if type(sep) != str:
+        raise TypeError("sep must be a str")
+
+    if len(sep) == 0:
+        raise ValueError("sep can't be empty")
+
+    if type(header) != bool:
+        raise TypeError("header must be a bool")
+
+    line_counter: int = 0
+    try:
+        with open(path, "r") as file:
+            for line in file.readlines():
+                line = line.strip('\n')
+                line_counter += 1
+                if len(line) == 0:
+                    raise ValueError(f"line {line_counter} is empty")
+
+                terms: List[str] = line.split(sep)
+
+                if len(terms) != fields:
+                    raise ValueError(f"expect {fields} but {len(terms)} were "
+                                     f"found")
+
+                if header and line_counter == 1:
+                    continue
+
+                yield terms
+            else:
+                file.close()
+    except IOError as e:
+        print(f'Error working with the file {file_path} \n{str(e)}')
+    except ValueError as e:
+        raise ValueError(
+            f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
 
 
 class FileAnalyzer:
