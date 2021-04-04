@@ -165,15 +165,12 @@ def _analyze_file(path: str) -> FileData:
             # Count lines
             data.lines += 1
 
-            # Remove break lines
-            line = line.strip('\n')
-
             # The line is empty so we skip it
             if len(line) == 0:
                 continue
 
             # Count characters in line
-            data.characters += len(list(line.replace(" ", "")))
+            data.characters += len(list(line))
 
             # Remove the extra space in the beginning of the line
             # Count functions
@@ -199,6 +196,9 @@ class FileAnalyzer:
 
     def __init__(self, directory: str = os.curdir) -> None:
         """ Constructor for the analyzer"""
+        if type(directory) != str:
+            raise TypeError('directory must be a str')
+
         if not os.path.exists(directory):
             raise FileNotFoundError(f'path {directory} do not exist')
 
@@ -214,12 +214,20 @@ class FileAnalyzer:
 
     def analyze_files(self) -> None:
         """ Analyze a directory to get the files data"""
-        files: List[str] = os.listdir(self.directory)
+
+        # Read the files in dir, join them with the parent directory and
+        # the the absolute path of the file
+        files: List[str] = [os.path.abspath(os.path.join(self.directory, f))
+                            for f in os.listdir(self.directory)]
+
+        # Filter the list and only analyze python files
         files_data: List[FileData] = [_analyze_file(file)
                                       for file in files
                                       if _is_a_python_file(file)]
+
+        # Transform the class to a dictionary using dictionary comprehension
         self.files_summary = {
-            data.name: {
+            os.path.basename(data.name): {
                 "class": data.classes,
                 "function": data.functions,
                 "line": data.lines,
@@ -227,7 +235,6 @@ class FileAnalyzer:
             } for data in files_data
         }
 
-    @staticmethod
     def pretty_print(self) -> None:
         """Display the summary as a table"""
         table = PrettyTable()

@@ -17,7 +17,7 @@
    CWID: 10467076
 """
 import unittest
-from typing import Tuple, List
+from typing import List
 from datetime import datetime
 from HW08_Jose_Cruz import date_arithmetic, file_reader, FileAnalyzer
 
@@ -96,7 +96,36 @@ class FileAnalyzerTest(unittest.TestCase):
     """Test suite for FileAnalyzer"""
 
     def test_file_analyzer(self) -> None:
-        self.assertTrue(True)
+        file_path: str = "./support/student_majors.txt"
+        dir_path: str = "./support/tests"
+
+        first_file = '0_defs_in_this_file.py'
+        second_file = 'file1.py'
+
+        with self.assertRaises(TypeError):
+            FileAnalyzer(0)
+
+        with self.assertRaises(FileNotFoundError):
+            FileAnalyzer("./support/example")
+
+        with self.assertRaises(ValueError):
+            FileAnalyzer(file_path)
+
+        file_analyzer: FileAnalyzer = FileAnalyzer(dir_path)
+        self.assertEqual(len(file_analyzer.files_summary.keys()), 2)
+        self.assertEqual(file_analyzer.files_summary[first_file], {
+            "class": 0,
+            "function": 0,
+            "line": 3,
+            "char": 57
+        })
+        self.assertEqual(file_analyzer.files_summary[second_file], {
+            "class": 2,
+            "function": 4,
+            "line": 25,
+            "char": 270
+        })
+        file_analyzer.pretty_print()
 
 
 if __name__ == "__main__":
