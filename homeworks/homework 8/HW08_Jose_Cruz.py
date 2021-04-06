@@ -48,8 +48,9 @@ def date_arithmetic() -> Tuple[datetime, datetime, int]:
 
 
 def file_reader(path: str, fields: int, sep: str = ",",
-                header: bool = False) -> Iterator[List[str]]:
+                header: bool = False) -> Iterator[Tuple[str]]:
     """Return a generator using a file and split using separators"""
+
     # Performing type validation
     if type(path) != str:
         raise TypeError("Value must be a str")
@@ -83,10 +84,8 @@ def file_reader(path: str, fields: int, sep: str = ",",
             for line in file.readlines():
                 line = line.strip('\n')
                 line_counter += 1
-                if len(line) == 0:
-                    raise ValueError(f"line {line_counter} is empty")
 
-                terms: List[str] = line.split(sep)
+                terms: List[str] = line.split(sep) if len(line) > 0 else []
 
                 if len(terms) != fields:
                     raise ValueError(f"expect {fields} but {len(terms)} were "
@@ -95,7 +94,7 @@ def file_reader(path: str, fields: int, sep: str = ",",
                 if header and line_counter == 1:
                     continue
 
-                yield terms
+                yield tuple(terms)
             else:
                 file.close()
     except IOError as e:
