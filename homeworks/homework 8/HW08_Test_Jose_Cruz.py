@@ -17,7 +17,7 @@
    CWID: 10467076
 """
 import unittest
-from typing import List
+from typing import List, Tuple
 from datetime import datetime
 from HW08_Jose_Cruz import date_arithmetic, file_reader, FileAnalyzer
 
@@ -73,7 +73,7 @@ class FileReaderTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             list(file_reader(error_file_path, 2, "|", True))
 
-        response: List[List[str]] = list(file_reader(file_path, 3, "|"))
+        response: List[Tuple[str]] = list(file_reader(file_path, 3, "|"))
         self.assertEqual(response, [
             ("CWID", "Name", "Major"),
             ("123", "Jin He", "Computer Science"),
