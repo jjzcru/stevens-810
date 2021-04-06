@@ -63,7 +63,7 @@ on each call to next(). Your generator MUST meet the following requirements:
   defaults to comma (',') (that wasn’t intended as an emoji…)
   - `header: bool`: an optional boolean parameter that defaults to False to 
   specify if the first line in the file is a header line
-- The generator should raise a FileNotFound exception if the specified file 
+- The generator should raise a `FileNotFound` exception if the specified file 
   can’t be opened for reading along with a meaningful message to help the 
   reader to understand the problem
 - The generator should raise a ValueError exception if a line in the file 
