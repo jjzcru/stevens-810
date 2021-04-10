@@ -11,7 +11,8 @@
 """
 import os
 from pathlib import Path
-from typing import List
+from collections import defaultdict
+from typing import List, Optional, Dict
 
 
 class Student:
@@ -37,13 +38,81 @@ class Instructor:
 
 
 class Grade:
+    # Represents grade  object
+    __slots__ = ['student_id', 'course', 'grade', 'professor_id']
+
     def __init__(self, student_id: str, course: str, grade: str,
                  professor_id: str) -> None:
-        self.student_cwid = student_id
+        self.student_id = student_id
         self.course = course
         self.grade = grade
-        self.professor_cwid = professor_id
+        self.professor_id = professor_id
 
+
+class StudentRepository:
+    # Process student information
+    __slots__ = ['students']
+    students: Dict[str, Student]
+
+    def __init__(self, students: List[Student]) -> None:
+        # Initialize repository
+
+        # Create a dictionary for the students
+        records: Dict[str, Student] = defaultdict()
+        for student in students:
+            records[student.cwid] = student
+
+        self.students = records
+
+    def find_by_id(self, cwid: str) -> Optional[Student]:
+        # Returns a student with the specified id or None if do not exist
+        return self.students.get(cwid)
+
+    def find_by_major(self, major: str) -> List[Student]:
+        # Returns all the students that belongs to a specific major
+        students: List[Student] = []
+        for cwid in self.students:
+            student: Student = self.students[cwid]
+            if self.students[cwid].major == major:
+                students.append(student)
+        return students
+
+    @staticmethod
+    def from_file(file_path: str) -> List[Student]:
+        students: List[Student] = []
+        if type(file_path) != str:
+            raise TypeError("path must be a str")
+
+        # Verifies that the file exist
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"the path {file_path} do not exist")
+
+        if not Path(file_path).is_file():
+            raise ValueError(f"the path {file_path} is not a file")
+
+        line_counter: int = 0
+        try:
+            with open(file_path, "r") as file:
+                for line in file.readlines():
+                    line = line.strip('\n')
+                    line_counter += 1
+
+                    terms: List[str] = line.split('\t') if len(line) > 0 else []
+
+                    if len(terms) != 3:
+                        raise ValueError(
+                            f"expect {3} fields but {len(terms)} were found")
+
+                    students.append(Student(terms[0], terms[1], terms[2]))
+                else:
+                    file.close()
+        except IOError as e:
+            print(f'Error working with the file {file_path} \n{str(e)}')
+        except ValueError as e:
+            raise ValueError(
+                f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
+
+        return students
 
 class GradesRepository:
     def __init__(self, grades: List[Grade]) -> None:
