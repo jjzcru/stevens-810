@@ -1,11 +1,4 @@
-"""HW05: String methods, slices, working with files, and automated testing
-
-    This class will test:
-    - date_arithmetic
-    - file_reader
-    - anagrams_cntr
-    - covers_alphabet
-    - web_analyzer
+"""HW05: University Repository
 
     CONVENTIONS:
     - Max character limit per line 80
@@ -17,9 +10,9 @@
    CWID: 10467076
 """
 import unittest
-from typing import List, Tuple
-from datetime import datetime
-from HW09_Jose_Cruz import StudentRepository, Student
+from typing import List
+from HW09_Jose_Cruz import StudentRepository, Student, InstructorRepository, \
+    Instructor
 
 
 class StudentRepositoryTest(unittest.TestCase):
@@ -77,3 +70,64 @@ class StudentRepositoryTest(unittest.TestCase):
         self.assertEqual(len(repository.find_by_major("SFEN")), 5)
         self.assertEqual(len(repository.find_by_major("SYEN")), 5)
         self.assertIsNone(repository.find_by_id("TEST"))
+
+
+class InstructorRepositoryTest(unittest.TestCase):
+    """Test suite for InstructorRepository"""
+
+    def test_from_file(self) -> None:
+        # Test getting a list of student from file
+        non_existing_file_path: str = "./test"
+        dir_path: str = "./support"
+        file_path: str = "./support/instructors.txt"
+
+        with self.assertRaises(TypeError):
+            InstructorRepository.from_file(0)
+
+        with self.assertRaises(FileNotFoundError):
+            InstructorRepository.from_file(non_existing_file_path)
+
+        with self.assertRaises(ValueError):
+            InstructorRepository.from_file(dir_path)
+
+        instructors: List[Instructor] = \
+            InstructorRepository.from_file(file_path)
+
+        self.assertEqual(len(instructors), 6)
+        expected_result: List[Instructor] = [
+            Instructor("98765", "Einstein, A", "SFEN"),
+            Instructor("98764", "Feynman, R", "SFEN"),
+            Instructor("98763", "Newton, I", "SFEN"),
+            Instructor("98762", "Hawking, S", "SYEN"),
+            Instructor("98761", "Edison, A", "SYEN"),
+            Instructor("98760", "Darwin, C", "SYEN"),
+
+        ]
+        for i in range(len(instructors)):
+            self.assertEqual(instructors[i].cwid, expected_result[i].cwid)
+            self.assertEqual(instructors[i].name, expected_result[i].name)
+            self.assertEqual(instructors[i].department,
+                             expected_result[i].department)
+
+    def test_repository(self) -> None:
+        # Test repository functionalities
+        file_path: str = "./support/instructors.txt"
+
+        instructors: List[Instructor] = \
+            InstructorRepository.from_file(file_path)
+        repository: InstructorRepository = InstructorRepository(instructors)
+
+        self.assertEqual(len(repository.instructors), 6)
+        expected_instructor: Instructor = \
+            Instructor("98765", "Einstein, A", "SFEN")
+        instructor: Instructor = repository.find_by_id("98765")
+        self.assertEqual(expected_instructor.cwid, instructor.cwid)
+        self.assertEqual(expected_instructor.name, instructor.name)
+        self.assertEqual(expected_instructor.department,
+                         instructor.department)
+
+        self.assertEqual(len(repository.find_by_department("SFEN")), 3)
+        self.assertEqual(len(repository.find_by_department("SYEN")), 3)
+        self.assertIsNone(repository.find_by_id("TEST"))
+
+# TODO Grades Repository

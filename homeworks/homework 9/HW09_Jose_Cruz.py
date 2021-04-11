@@ -1,4 +1,4 @@
-"""HW09: Repository
+"""HW09: University Repository
 
     CONVENTIONS:
         - Max character limit per line 80
@@ -97,6 +97,10 @@ class StudentRepository:
                     line = line.strip('\n')
                     line_counter += 1
 
+                    # Skip empty lines
+                    if len(line) == 0:
+                        continue
+
                     terms: List[str] = line.split('\t') if len(line) > 0 else []
 
                     if len(terms) != 3:
@@ -113,6 +117,77 @@ class StudentRepository:
                 f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
 
         return students
+
+
+class InstructorRepository:
+    # Process instructor information
+    __slots__ = ['instructors']
+    instructors: Dict[str, Instructor]
+
+    def __init__(self, instructors: List[Instructor]) -> None:
+        # Initialize repository
+
+        # Create a dictionary for the students
+        records: Dict[str, Instructor] = defaultdict()
+        for instructor in instructors:
+            records[instructor.cwid] = instructor
+
+        self.instructors = records
+
+    def find_by_id(self, cwid: str) -> Optional[Instructor]:
+        # Returns a student with the specified id or None if do not exist
+        return self.instructors.get(cwid)
+
+    def find_by_department(self, department: str) -> List[Instructor]:
+        # Returns all the students that belongs to a specific major
+        instructors: List[Instructor] = []
+        for cwid in self.instructors:
+            instructor: Instructor = self.instructors[cwid]
+            if self.instructors[cwid].department == department:
+                instructors.append(instructor)
+        return instructors
+
+    @staticmethod
+    def from_file(file_path: str) -> List[Instructor]:
+        instructors: List[Instructor] = []
+        if type(file_path) != str:
+            raise TypeError("path must be a str")
+
+        # Verifies that the file exist
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"the path {file_path} do not exist")
+
+        if not Path(file_path).is_file():
+            raise ValueError(f"the path {file_path} is not a file")
+
+        line_counter: int = 0
+        try:
+            with open(file_path, "r") as file:
+                for line in file.readlines():
+                    line = line.strip('\n')
+                    line_counter += 1
+
+                    # Skip empty lines
+                    if len(line) == 0:
+                        continue
+
+                    terms: List[str] = line.split('\t') if len(line) > 0 else []
+
+                    if len(terms) != 3:
+                        raise ValueError(
+                            f"expect {3} fields but {len(terms)} were found")
+
+                    instructors.append(Instructor(terms[0], terms[1], terms[2]))
+                else:
+                    file.close()
+        except IOError as e:
+            print(f'Error working with the file {file_path} \n{str(e)}')
+        except ValueError as e:
+            raise ValueError(
+                f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
+
+        return instructors
+
 
 class GradesRepository:
     def __init__(self, grades: List[Grade]) -> None:
