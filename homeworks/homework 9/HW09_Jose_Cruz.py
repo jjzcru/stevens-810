@@ -44,9 +44,57 @@ class Grade:
     def __init__(self, student_id: str, course: str, grade: str,
                  professor_id: str) -> None:
         self.student_id = student_id
-        self.course = course
         self.grade = grade
+        self.course = course
         self.professor_id = professor_id
+        self.__validate()
+
+    def __validate(self):
+        # Validate input information
+        if type(self.student_id) != str:
+            raise TypeError('student_id must be a string')
+
+        if type(self.course) != str:
+            raise TypeError('course must be a string')
+
+        if type(self.grade) != str:
+            raise TypeError('grade must be a string')
+
+        if type(self.professor_id) != str:
+            raise TypeError('professor_id must be a string')
+
+        if len(self.student_id) == 0:
+            raise ValueError("student_id can't be empty")
+
+        if len(self.course) == 0:
+            raise ValueError("course can't be empty")
+
+        if len(self.grade) == 0:
+            raise ValueError("grade can't be empty")
+
+        if len(self.professor_id) == 0:
+            raise ValueError("professor_id can't be empty")
+
+        self.grade = self.grade.upper()
+        self.__validate_grade()
+
+    def __validate_grade(self):
+        grade: str = self.grade
+
+        if grade != 'F' and \
+                grade != "D-" and \
+                grade != "D" and \
+                grade != "D+" and \
+                grade != "C-" and \
+                grade != "C" and \
+                grade != "C+" and \
+                grade != "B-" and \
+                grade != "B" and \
+                grade != "B+" and \
+                grade != "A-" and \
+                grade != "A" and \
+                grade != "A+":
+            raise ValueError('Invalid grade letter')
 
 
 class StudentRepository:
@@ -190,44 +238,62 @@ class InstructorRepository:
 
 
 class GradesRepository:
+    # Represents grades repository
+    __slots__ = ['grades']
+
     def __init__(self, grades: List[Grade]) -> None:
         self.grades = grades
 
-    @staticmethod
-    def load(path: str) -> List[Grade]:
+    def find_by_student(self, cwid: str) -> List[Grade]:
+        # Returns all the grades from a student
+        return [grade for grade in self.grades if grade.student_id == cwid]
 
+    def find_by_instructor(self, cwid: str) -> List[Grade]:
+        # Returns all the grades from a instructor
+        return [grade for grade in self.grades if grade.professor_id == cwid]
+
+    def find_by_course(self, course: str) -> List[Grade]:
+        # Returns all the grades from a instructor
+        return [grade for grade in self.grades if grade.course == course]
+
+    @staticmethod
+    def from_file(file_path: str) -> List[Grade]:
         grades: List[Grade] = []
-        if type(path) != str:
+        if type(file_path) != str:
             raise TypeError("path must be a str")
 
-            # Verifies that the file exist
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"the path {path} do not exist")
+        # Verifies that the file exist
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"the path {file_path} do not exist")
 
-        if not Path(path).is_file():
-            raise ValueError(f"the path {path} is not a file")
+        if not Path(file_path).is_file():
+            raise ValueError(f"the path {file_path} is not a file")
 
         line_counter: int = 0
         try:
-            with open(path, "r") as file:
+            with open(file_path, "r") as file:
                 for line in file.readlines():
                     line = line.strip('\n')
                     line_counter += 1
+
+                    # Skip empty lines
+                    if len(line) == 0:
+                        continue
 
                     terms: List[str] = line.split('\t') if len(line) > 0 else []
 
                     if len(terms) != 4:
                         raise ValueError(
-                            f"expect {4} fields but {len(terms)} were "
-                            f"found")
+                            f"expect {4} fields but {len(terms)} were found")
 
+                    grades.append(Grade(terms[0], terms[1], terms[2], terms[3]))
                 else:
                     file.close()
         except IOError as e:
-            print(f'Error working with the file {path} \n{str(e)}')
+            print(f'Error working with the file {file_path} \n{str(e)}')
         except ValueError as e:
             raise ValueError(
-                f"Error in file '{path}' line {line_counter} \n{str(e)}")
+                f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
 
         return grades
 
