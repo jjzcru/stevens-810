@@ -224,7 +224,7 @@ class UniversityTest(unittest.TestCase):
     def test_student_summary(self):
         dir_path: str = "./support"
         repository: University = University(dir_path)
-
+        self.assertEqual(len(repository.get_students()), 10)
         self.assertEqual(len(repository.get_student_summary()), 10)
         print('Student Summary')
         repository.display_student_summary()
@@ -232,7 +232,7 @@ class UniversityTest(unittest.TestCase):
     def test_instructor_summary(self):
         dir_path: str = "./support"
         repository: University = University(dir_path)
-
+        self.assertEqual(len(repository.get_instructors()), 6)
         self.assertEqual(len(repository.get_instructor_summary()), 12)
         print('Instructor Summary')
         repository.display_instructor_summary()

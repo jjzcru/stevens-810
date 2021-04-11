@@ -90,14 +90,27 @@ class University:
             self.instructors.get(instructor.GetBy.ID, item.professor_id)
             self.students.get(student.GetBy.ID, item.student_id)
 
+    def get_instructors(self) -> List[Instructor]:
+        # Return a list of all the instructors in the university
+        return [item for _, item in self.instructors.all().items()]
+
+    def get_students(self) -> List[Student]:
+        # Return a list of all the students in the university
+        return [item for _, item in self.students.all().items()]
+
+    def get_grades(self) -> List[Grade]:
+        # Return a list of all the grades in the university
+        return self.grades.all()
+
     def get_student_summary(self) -> List[Tuple[str, str, List[str]]]:
         # Calculate the summary for students
         summary: List[Tuple[str, str, List]] = []
 
-        for cwid, learner in self.students.all().items():
+        for learner in self.get_students():
             courses: List[str] = [item.course for item in
-                                  self.grades.get(grade.GetBy.STUDENT, cwid)]
-            summary.append((cwid, learner.name, sorted(courses)))
+                                  self.grades.get(grade.GetBy.STUDENT,
+                                                  learner.cwid)]
+            summary.append((learner.cwid, learner.name, sorted(courses)))
 
         return summary
 
@@ -129,8 +142,8 @@ class University:
             instructor_dict[cwid] = courses
 
         for cwid, courses in instructor_dict.items():
-            teacher: Instructor = self.instructors.get(instructor.GetBy.ID,
-                                                       cwid)
+            teacher: Instructor = self.instructors.get(
+                instructor.GetBy.ID, cwid)
             for course in sorted(list(courses)):
                 summary.append((
                     cwid,
