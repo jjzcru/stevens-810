@@ -12,7 +12,7 @@
 import unittest
 from typing import List
 from HW09_Jose_Cruz import StudentRepository, Student, InstructorRepository, \
-    Instructor, GradesRepository, Grade
+    Instructor, GradesRepository, Grade, UniversityRepository
 
 
 class StudentRepositoryTest(unittest.TestCase):
@@ -69,7 +69,8 @@ class StudentRepositoryTest(unittest.TestCase):
 
         self.assertEqual(len(repository.find_by_major("SFEN")), 5)
         self.assertEqual(len(repository.find_by_major("SYEN")), 5)
-        self.assertIsNone(repository.find_by_id("TEST"))
+        with self.assertRaises(ValueError):
+            repository.find_by_id("TEST")
 
 
 class InstructorRepositoryTest(unittest.TestCase):
@@ -128,7 +129,8 @@ class InstructorRepositoryTest(unittest.TestCase):
 
         self.assertEqual(len(repository.find_by_department("SFEN")), 3)
         self.assertEqual(len(repository.find_by_department("SYEN")), 3)
-        self.assertIsNone(repository.find_by_id("TEST"))
+        with self.assertRaises(ValueError):
+            repository.find_by_id("TEST")
 
 
 class GradeRepositoryTest(unittest.TestCase):
@@ -141,7 +143,7 @@ class GradeRepositoryTest(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             Grade('', 'Test', 'test', '12345')
-            
+
         with self.assertRaises(ValueError):
             Grade('123', 'Test', 'X', '12345')
 
@@ -170,7 +172,8 @@ class GradeRepositoryTest(unittest.TestCase):
             Grade("10103", "SSW 687", "B", "98764"),
         ]
         for i in range(len(grades[0:3])):
-            self.assertEqual(grades[i].student_id, expected_result[i].student_id)
+            self.assertEqual(grades[i].student_id,
+                             expected_result[i].student_id)
             self.assertEqual(grades[i].course, expected_result[i].course)
             self.assertEqual(grades[i].grade, expected_result[i].grade)
             self.assertEqual(grades[i].professor_id,
@@ -190,6 +193,40 @@ class GradeRepositoryTest(unittest.TestCase):
         self.assertEqual(len(repository.find_by_course("SSW 999")), 0)
         self.assertEqual(len(repository.find_by_instructor("98765")), 7)
         self.assertEqual(len(repository.find_by_instructor("9876")), 0)
+
+
+class UniversityRepositoryTest(unittest.TestCase):
+    """Test suite for UniversityRepository"""
+
+    def test_init(self) -> None:
+        # Test repository functionalities
+        non_dir_path: str = "./support/instructors.txt"
+        non_existing_dir_path: str = "./test"
+
+        with self.assertRaises(TypeError):
+            UniversityRepository(0)
+
+        with self.assertRaises(FileNotFoundError):
+            UniversityRepository(non_existing_dir_path)
+
+        with self.assertRaises(ValueError):
+            UniversityRepository(non_dir_path)
+
+    def test_student_summary(self):
+        dir_path: str = "./support"
+        repository: UniversityRepository = UniversityRepository(dir_path)
+
+        self.assertEqual(len(repository.get_student_summary()), 10)
+        print('Student Summary')
+        repository.display_student_summary()
+
+    def test_instructor_summary(self):
+        dir_path: str = "./support"
+        repository: UniversityRepository = UniversityRepository(dir_path)
+
+        self.assertEqual(len(repository.get_instructor_summary()), 12)
+        print('Instructor Summary')
+        repository.display_instructor_summary()
 
 
 if __name__ == "__main__":

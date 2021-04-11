@@ -12,37 +12,81 @@
 import os
 from pathlib import Path
 from collections import defaultdict
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple, Set
+from prettytable import PrettyTable
 
 
 class Student:
     # Represents student object
-    __slots__ = ['cwid', 'name', 'major']
+    __slots__ = ["cwid", "name", "major"]
 
     def __init__(self, cwid: str, name: str, major: str) -> None:
         # Initialize student object
         self.cwid = cwid
         self.name = name
         self.major = major
+        self.__validate()
+
+    def __validate(self):
+        # Validate input information
+        if type(self.cwid) != str:
+            raise TypeError("cwid must be a string")
+
+        if len(self.cwid) == 0:
+            raise ValueError("cwid can't be empty")
+
+        if type(self.name) != str:
+            raise TypeError("name must be a string")
+
+        if len(self.name) == 0:
+            raise ValueError("name can't be empty")
+
+        if type(self.major) != str:
+            raise TypeError("major must be a string")
+
+        if len(self.major) == 0:
+            raise ValueError("major can't be empty")
 
 
 class Instructor:
     # Represents instructor object
-    __slots__ = ['cwid', 'name', 'department']
+    __slots__ = ["cwid", "name", "department"]
 
     def __init__(self, cwid: str, name: str, department: str) -> None:
-        # Initialize professor object
+        # Initialize instructor object
         self.cwid = cwid
         self.name = name
         self.department = department
+        self.__validate()
+
+    def __validate(self):
+        # Validate input information
+        if type(self.cwid) != str:
+            raise TypeError("cwid must be a string")
+
+        if len(self.cwid) == 0:
+            raise ValueError("cwid can't be empty")
+
+        if type(self.name) != str:
+            raise TypeError("name must be a string")
+
+        if len(self.name) == 0:
+            raise ValueError("name can't be empty")
+
+        if type(self.department) != str:
+            raise TypeError("department must be a string")
+
+        if len(self.department) == 0:
+            raise ValueError("department can't be empty")
 
 
 class Grade:
     # Represents grade  object
-    __slots__ = ['student_id', 'course', 'grade', 'professor_id']
+    __slots__ = ["student_id", "course", "grade", "professor_id"]
 
     def __init__(self, student_id: str, course: str, grade: str,
                  professor_id: str) -> None:
+        # Initialize grade object
         self.student_id = student_id
         self.grade = grade
         self.course = course
@@ -52,25 +96,25 @@ class Grade:
     def __validate(self):
         # Validate input information
         if type(self.student_id) != str:
-            raise TypeError('student_id must be a string')
-
-        if type(self.course) != str:
-            raise TypeError('course must be a string')
-
-        if type(self.grade) != str:
-            raise TypeError('grade must be a string')
-
-        if type(self.professor_id) != str:
-            raise TypeError('professor_id must be a string')
+            raise TypeError("student_id must be a string")
 
         if len(self.student_id) == 0:
             raise ValueError("student_id can't be empty")
 
+        if type(self.course) != str:
+            raise TypeError("course must be a string")
+
         if len(self.course) == 0:
             raise ValueError("course can't be empty")
 
+        if type(self.grade) != str:
+            raise TypeError("grade must be a string")
+
         if len(self.grade) == 0:
             raise ValueError("grade can't be empty")
+
+        if type(self.professor_id) != str:
+            raise TypeError("professor_id must be a string")
 
         if len(self.professor_id) == 0:
             raise ValueError("professor_id can't be empty")
@@ -79,9 +123,10 @@ class Grade:
         self.__validate_grade()
 
     def __validate_grade(self):
+        # Validate that the grade is valid
         grade: str = self.grade
 
-        if grade != 'F' and \
+        if grade != "F" and \
                 grade != "D-" and \
                 grade != "D" and \
                 grade != "D+" and \
@@ -94,12 +139,12 @@ class Grade:
                 grade != "A-" and \
                 grade != "A" and \
                 grade != "A+":
-            raise ValueError('Invalid grade letter')
+            raise ValueError(f"the letter {grade} is an invalid grade")
 
 
 class StudentRepository:
     # Process student information
-    __slots__ = ['students']
+    __slots__ = ["students"]
     students: Dict[str, Student]
 
     def __init__(self, students: List[Student]) -> None:
@@ -113,8 +158,12 @@ class StudentRepository:
         self.students = records
 
     def find_by_id(self, cwid: str) -> Optional[Student]:
-        # Returns a student with the specified id or None if do not exist
-        return self.students.get(cwid)
+        """Returns a student with the specified id throws an errors
+        if do not exist"""
+        student: Optional[Student] = self.students.get(cwid)
+        if student is None:
+            raise ValueError(f"student with cwid {cwid} do not exist")
+        return student
 
     def find_by_major(self, major: str) -> List[Student]:
         # Returns all the students that belongs to a specific major
@@ -127,9 +176,10 @@ class StudentRepository:
 
     @staticmethod
     def from_file(file_path: str) -> List[Student]:
+        # Get a list of students from a file
         students: List[Student] = []
         if type(file_path) != str:
-            raise TypeError("path must be a str")
+            raise TypeError("file_path must be a str")
 
         # Verifies that the file exist
         if not os.path.exists(file_path):
@@ -142,14 +192,14 @@ class StudentRepository:
         try:
             with open(file_path, "r") as file:
                 for line in file.readlines():
-                    line = line.strip('\n')
+                    line = line.strip("\n")
                     line_counter += 1
 
                     # Skip empty lines
                     if len(line) == 0:
                         continue
 
-                    terms: List[str] = line.split('\t') if len(line) > 0 else []
+                    terms: List[str] = line.split("\t") if len(line) > 0 else []
 
                     if len(terms) != 3:
                         raise ValueError(
@@ -159,7 +209,7 @@ class StudentRepository:
                 else:
                     file.close()
         except IOError as e:
-            print(f'Error working with the file {file_path} \n{str(e)}')
+            print(f"Error working with the file {file_path} \n{str(e)}")
         except ValueError as e:
             raise ValueError(
                 f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
@@ -169,13 +219,13 @@ class StudentRepository:
 
 class InstructorRepository:
     # Process instructor information
-    __slots__ = ['instructors']
+    __slots__ = ["instructors"]
     instructors: Dict[str, Instructor]
 
     def __init__(self, instructors: List[Instructor]) -> None:
         # Initialize repository
 
-        # Create a dictionary for the students
+        # Create a dictionary for the instructors
         records: Dict[str, Instructor] = defaultdict()
         for instructor in instructors:
             records[instructor.cwid] = instructor
@@ -183,11 +233,15 @@ class InstructorRepository:
         self.instructors = records
 
     def find_by_id(self, cwid: str) -> Optional[Instructor]:
-        # Returns a student with the specified id or None if do not exist
-        return self.instructors.get(cwid)
+        """Returns a instructor with the specified id or throw an error if do
+        not exist"""
+        instructor: Optional[Instructor] = self.instructors.get(cwid)
+        if instructor is None:
+            raise ValueError(f"instructor with cwid {cwid} do not exist")
+        return instructor
 
     def find_by_department(self, department: str) -> List[Instructor]:
-        # Returns all the students that belongs to a specific major
+        # Returns all the instructors that belongs to a specific department
         instructors: List[Instructor] = []
         for cwid in self.instructors:
             instructor: Instructor = self.instructors[cwid]
@@ -197,9 +251,10 @@ class InstructorRepository:
 
     @staticmethod
     def from_file(file_path: str) -> List[Instructor]:
+        # Get a list of instructors from a file
         instructors: List[Instructor] = []
         if type(file_path) != str:
-            raise TypeError("path must be a str")
+            raise TypeError("file_path must be a str")
 
         # Verifies that the file exist
         if not os.path.exists(file_path):
@@ -212,14 +267,14 @@ class InstructorRepository:
         try:
             with open(file_path, "r") as file:
                 for line in file.readlines():
-                    line = line.strip('\n')
+                    line = line.strip("\n")
                     line_counter += 1
 
                     # Skip empty lines
                     if len(line) == 0:
                         continue
 
-                    terms: List[str] = line.split('\t') if len(line) > 0 else []
+                    terms: List[str] = line.split("\t") if len(line) > 0 else []
 
                     if len(terms) != 3:
                         raise ValueError(
@@ -229,7 +284,7 @@ class InstructorRepository:
                 else:
                     file.close()
         except IOError as e:
-            print(f'Error working with the file {file_path} \n{str(e)}')
+            print(f"Error working with the file {file_path} \n{str(e)}")
         except ValueError as e:
             raise ValueError(
                 f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
@@ -239,9 +294,10 @@ class InstructorRepository:
 
 class GradesRepository:
     # Represents grades repository
-    __slots__ = ['grades']
+    __slots__ = ["grades"]
 
     def __init__(self, grades: List[Grade]) -> None:
+        # Initialize the grade repository
         self.grades = grades
 
     def find_by_student(self, cwid: str) -> List[Grade]:
@@ -258,6 +314,7 @@ class GradesRepository:
 
     @staticmethod
     def from_file(file_path: str) -> List[Grade]:
+        # Get a list of grades from a file
         grades: List[Grade] = []
         if type(file_path) != str:
             raise TypeError("path must be a str")
@@ -273,14 +330,14 @@ class GradesRepository:
         try:
             with open(file_path, "r") as file:
                 for line in file.readlines():
-                    line = line.strip('\n')
+                    line = line.strip("\n")
                     line_counter += 1
 
                     # Skip empty lines
                     if len(line) == 0:
                         continue
 
-                    terms: List[str] = line.split('\t') if len(line) > 0 else []
+                    terms: List[str] = line.split("\t") if len(line) > 0 else []
 
                     if len(terms) != 4:
                         raise ValueError(
@@ -290,7 +347,7 @@ class GradesRepository:
                 else:
                     file.close()
         except IOError as e:
-            print(f'Error working with the file {file_path} \n{str(e)}')
+            print(f"Error working with the file {file_path} \n{str(e)}")
         except ValueError as e:
             raise ValueError(
                 f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
@@ -300,6 +357,7 @@ class GradesRepository:
 
 class UniversityRepository:
     def __init__(self, directory: str) -> None:
+        # Initialize university repository
         if type(directory) != str:
             raise TypeError("Value must be a str")
 
@@ -314,6 +372,21 @@ class UniversityRepository:
         self.directory = directory
         self.__validate_files()
 
+        instructors: List[Instructor] = \
+            InstructorRepository.from_file(self.instructors_path)
+        students: List[Student] = \
+            StudentRepository.from_file(self.student_path)
+        grades: List[Grade] = \
+            GradesRepository.from_file(self.grades_path)
+
+        self.instructors_repository: InstructorRepository = \
+            InstructorRepository(instructors)
+        self.students_repository: StudentRepository = \
+            StudentRepository(students)
+        self.grades_repository: GradesRepository = \
+            GradesRepository(grades)
+        self.__validate_data_integrity()
+
     def __validate_files(self) -> None:
         # Validates that the required files exist and add them to self
         student: str = os.path.join(self.directory, "students.txt")
@@ -322,27 +395,101 @@ class UniversityRepository:
 
         # Validate path exists
         if not os.path.exists(student):
-            raise FileNotFoundError(f'the path {student} do not exist')
+            raise FileNotFoundError(f"the path {student} do not exist")
 
         if not os.path.exists(instructors):
-            raise FileNotFoundError(f'the path {instructors} do not exist')
+            raise FileNotFoundError(f"the path {instructors} do not exist")
 
         if not os.path.exists(grades):
-            raise FileNotFoundError(f'the path {grades} do not exist')
+            raise FileNotFoundError(f"the path {grades} do not exist")
 
         # Validates the path are files
         student_path: Path = Path(student)
         instructors_path: Path = Path(instructors)
         grades_path: Path = Path(grades)
         if not student_path.is_file():
-            raise IsADirectoryError(f'the path {student} is a directory')
+            raise IsADirectoryError(f"the path {student} is a directory")
 
         if not instructors_path.is_file():
-            raise IsADirectoryError(f'the path {instructors} is a directory')
+            raise IsADirectoryError(f"the path {instructors} is a directory")
 
         if not grades_path.is_file():
-            raise IsADirectoryError(f'the path {grades} is a directory')
+            raise IsADirectoryError(f"the path {grades} is a directory")
 
-        self.__student_path = student
-        self.__instructors_path = instructors
-        self.__grades_path = grades
+        self.student_path = student
+        self.instructors_path = instructors
+        self.grades_path = grades
+
+    def __validate_data_integrity(self) -> None:
+        """Validate that all the professor and student reference exists"""
+        for grade in self.grades_repository.grades:
+            self.instructors_repository.find_by_id(grade.professor_id)
+            self.students_repository.find_by_id(grade.student_id)
+
+    def get_student_summary(self) -> List[Tuple[str, str, List[str]]]:
+        # Calculate the summary for students
+        summary: List[Tuple[str, str, List]] = []
+        for cwid, student in self.students_repository.students.items():
+            courses: List[str] = [grade.course for grade in
+                                  self.grades_repository.find_by_student(cwid)]
+            courses.sort()
+            summary.append((cwid, student.name, courses))
+
+        return summary
+
+    def display_student_summary(self) -> None:
+        """Display the summary as a table"""
+        table = PrettyTable()
+        table.field_names = [
+            "CWID",
+            "Name",
+            "Completed Courses",
+        ]
+
+        for cwid, name, courses in self.get_student_summary():
+            table.add_row([cwid, name, courses])
+        print(table)
+
+    def get_instructor_summary(self) -> List[Tuple[str, str, str, str, int]]:
+        # Calculate the instructor for instructors
+        summary: List[Tuple[str, str, str, str, int]] = []
+        instructor_dict: Dict[str, Set[str]] = defaultdict(set)
+        for grade in self.grades_repository.grades:
+            cwid: str = grade.professor_id
+            if cwid not in instructor_dict:
+                instructor_dict[cwid] = set([])
+
+            courses: Set[str] = instructor_dict[cwid]
+            courses.add(grade.course)
+
+            instructor_dict[cwid] = courses
+
+        for cwid, courses in instructor_dict.items():
+            instructor: Instructor = \
+                self.instructors_repository.find_by_id(cwid)
+
+            for course in sorted(list(courses)):
+                summary.append((
+                    cwid,
+                    instructor.name,
+                    instructor.department,
+                    course,
+                    len(self.grades_repository.find_by_course(course))
+                ))
+
+        return summary
+
+    def display_instructor_summary(self) -> None:
+        """Display the summary as a table"""
+        table = PrettyTable()
+        table.field_names = [
+            "CWID",
+            "Name",
+            "Dept",
+            "Course",
+            "Students"
+        ]
+
+        for cwid, name, dept, course, students in self.get_instructor_summary():
+            table.add_row([cwid, name, dept, course, students])
+        print(table)
