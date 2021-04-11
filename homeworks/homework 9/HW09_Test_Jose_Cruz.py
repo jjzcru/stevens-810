@@ -11,12 +11,17 @@
 """
 import unittest
 from typing import List
-from HW09_Jose_Cruz import StudentRepository, Student, InstructorRepository, \
-    Instructor, GradesRepository, Grade, UniversityRepository
+import instructor
+from instructor import Instructors, Instructor
+import student
+from student import Students, Student
+import grade
+from grade import Grades, Grade
+from HW09_Jose_Cruz import University
 
 
-class StudentRepositoryTest(unittest.TestCase):
-    """Test suite for StudentRepository"""
+class StudentsTest(unittest.TestCase):
+    """Test suite for Students"""
 
     def test_from_file(self) -> None:
         # Test getting a list of student from file
@@ -25,15 +30,15 @@ class StudentRepositoryTest(unittest.TestCase):
         file_path: str = "./support/students.txt"
 
         with self.assertRaises(TypeError):
-            StudentRepository.from_file(0)
+            Students.from_file(0)
 
         with self.assertRaises(FileNotFoundError):
-            StudentRepository.from_file(non_existing_file_path)
+            Students.from_file(non_existing_file_path)
 
         with self.assertRaises(ValueError):
-            StudentRepository.from_file(dir_path)
+            Students.from_file(dir_path)
 
-        students: List[Student] = StudentRepository.from_file(file_path)
+        students: List[Student] = Students.from_file(file_path)
 
         self.assertEqual(len(students), 10)
         expected_result: List[Student] = [
@@ -57,24 +62,24 @@ class StudentRepositoryTest(unittest.TestCase):
         # Test repository functionalities
         file_path: str = "./support/students.txt"
 
-        students: List[Student] = StudentRepository.from_file(file_path)
-        repository: StudentRepository = StudentRepository(students)
+        students: List[Student] = Students.from_file(file_path)
+        repository: Students = Students(students)
 
-        self.assertEqual(len(repository.students), 10)
-        expected_student: Student = Student("10103", "Baldwin, C", "SFEN")
-        student: Student = repository.find_by_id("10103")
-        self.assertEqual(expected_student.cwid, student.cwid)
-        self.assertEqual(expected_student.name, student.name)
-        self.assertEqual(expected_student.major, student.major)
+        self.assertEqual(len(repository.all()), 10)
+        expected: Student = Student("10103", "Baldwin, C", "SFEN")
 
-        self.assertEqual(len(repository.find_by_major("SFEN")), 5)
-        self.assertEqual(len(repository.find_by_major("SYEN")), 5)
+        learner: Student = repository.get(student.GetBy.ID, "10103")
+        self.assertEqual(expected.cwid, learner.cwid)
+        self.assertEqual(expected.name, learner.name)
+        self.assertEqual(expected.major, learner.major)
+        self.assertEqual(len(repository.get(student.GetBy.MAJOR, "SFEN")), 5)
+        self.assertEqual(len(repository.get(student.GetBy.MAJOR, "SYEN")), 5)
         with self.assertRaises(ValueError):
-            repository.find_by_id("TEST")
+            repository.get(student.GetBy.ID, "TEST")
 
 
-class InstructorRepositoryTest(unittest.TestCase):
-    """Test suite for InstructorRepository"""
+class InstructorsTest(unittest.TestCase):
+    """Test suite for Instructor"""
 
     def test_from_file(self) -> None:
         # Test getting a list of student from file
@@ -83,16 +88,16 @@ class InstructorRepositoryTest(unittest.TestCase):
         file_path: str = "./support/instructors.txt"
 
         with self.assertRaises(TypeError):
-            InstructorRepository.from_file(0)
+            Instructors.from_file(0)
 
         with self.assertRaises(FileNotFoundError):
-            InstructorRepository.from_file(non_existing_file_path)
+            Instructors.from_file(non_existing_file_path)
 
         with self.assertRaises(ValueError):
-            InstructorRepository.from_file(dir_path)
+            Instructors.from_file(dir_path)
 
         instructors: List[Instructor] = \
-            InstructorRepository.from_file(file_path)
+            Instructors.from_file(file_path)
 
         self.assertEqual(len(instructors), 6)
         expected_result: List[Instructor] = [
@@ -115,26 +120,28 @@ class InstructorRepositoryTest(unittest.TestCase):
         file_path: str = "./support/instructors.txt"
 
         instructors: List[Instructor] = \
-            InstructorRepository.from_file(file_path)
-        repository: InstructorRepository = InstructorRepository(instructors)
+            Instructors.from_file(file_path)
+        repository: Instructors = Instructors(instructors)
 
-        self.assertEqual(len(repository.instructors), 6)
-        expected_instructor: Instructor = \
-            Instructor("98765", "Einstein, A", "SFEN")
-        instructor: Instructor = repository.find_by_id("98765")
-        self.assertEqual(expected_instructor.cwid, instructor.cwid)
-        self.assertEqual(expected_instructor.name, instructor.name)
+        self.assertEqual(len(repository.all()), 6)
+        expected_instructor: Instructor = Instructor("98765",
+                                                     "Einstein, A", "SFEN")
+
+        teacher: Instructor = repository.get(instructor.GetBy.ID, "98765")
+        self.assertEqual(expected_instructor.cwid, teacher.cwid)
+        self.assertEqual(expected_instructor.name, teacher.name)
         self.assertEqual(expected_instructor.department,
-                         instructor.department)
-
-        self.assertEqual(len(repository.find_by_department("SFEN")), 3)
-        self.assertEqual(len(repository.find_by_department("SYEN")), 3)
+                         teacher.department)
+        self.assertEqual(len(
+            repository.get(instructor.GetBy.DEPARTMENT, "SFEN")), 3)
+        self.assertEqual(len(
+            repository.get(instructor.GetBy.DEPARTMENT, "SYEN")), 3)
         with self.assertRaises(ValueError):
-            repository.find_by_id("TEST")
+            repository.get(instructor.GetBy.ID, "TEST")
 
 
-class GradeRepositoryTest(unittest.TestCase):
-    """Test suite for GradeRepositoryTest"""
+class GradesTest(unittest.TestCase):
+    """Test suite for Grades"""
 
     def test_grade(self) -> None:
         # Test grade object
@@ -154,16 +161,16 @@ class GradeRepositoryTest(unittest.TestCase):
         file_path: str = "./support/grades.txt"
 
         with self.assertRaises(TypeError):
-            GradesRepository.from_file(0)
+            Grades.from_file(0)
 
         with self.assertRaises(FileNotFoundError):
-            GradesRepository.from_file(non_existing_file_path)
+            Grades.from_file(non_existing_file_path)
 
         with self.assertRaises(ValueError):
-            GradesRepository.from_file(dir_path)
+            Grades.from_file(dir_path)
 
         grades: List[Grade] = \
-            GradesRepository.from_file(file_path)
+            Grades.from_file(file_path)
 
         self.assertEqual(len(grades), 22)
         expected_result: List[Grade] = [
@@ -183,20 +190,22 @@ class GradeRepositoryTest(unittest.TestCase):
         # Test repository functionalities
         file_path: str = "./support/grades.txt"
 
-        grades: List[Grade] = GradesRepository.from_file(file_path)
-        repository: GradesRepository = GradesRepository(grades)
+        grades: List[Grade] = Grades.from_file(file_path)
+        repository: Grades = Grades(grades)
 
-        self.assertEqual(len(repository.grades), 22)
-        self.assertEqual(len(repository.find_by_student("10115")), 4)
-        self.assertEqual(len(repository.find_by_student("1011")), 0)
-        self.assertEqual(len(repository.find_by_course("SSW 567")), 4)
-        self.assertEqual(len(repository.find_by_course("SSW 999")), 0)
-        self.assertEqual(len(repository.find_by_instructor("98765")), 7)
-        self.assertEqual(len(repository.find_by_instructor("9876")), 0)
+        self.assertEqual(len(repository.all()), 22)
+        self.assertEqual(len(repository.get(grade.GetBy.STUDENT, "10115")), 4)
+        self.assertEqual(len(repository.get(grade.GetBy.STUDENT, "1011")), 0)
+        self.assertEqual(len(repository.get(grade.GetBy.COURSE, "SSW 567")), 4)
+        self.assertEqual(len(repository.get(grade.GetBy.COURSE, "SSW 999")), 0)
+        self.assertEqual(len(
+            repository.get(grade.GetBy.INSTRUCTOR, "98765")), 7)
+        self.assertEqual(len(
+            repository.get(grade.GetBy.INSTRUCTOR, "9876")), 0)
 
 
-class UniversityRepositoryTest(unittest.TestCase):
-    """Test suite for UniversityRepository"""
+class UniversityTest(unittest.TestCase):
+    """Test suite for University"""
 
     def test_init(self) -> None:
         # Test repository functionalities
@@ -204,17 +213,17 @@ class UniversityRepositoryTest(unittest.TestCase):
         non_existing_dir_path: str = "./test"
 
         with self.assertRaises(TypeError):
-            UniversityRepository(0)
+            University(0)
 
         with self.assertRaises(FileNotFoundError):
-            UniversityRepository(non_existing_dir_path)
+            University(non_existing_dir_path)
 
         with self.assertRaises(ValueError):
-            UniversityRepository(non_dir_path)
+            University(non_dir_path)
 
     def test_student_summary(self):
         dir_path: str = "./support"
-        repository: UniversityRepository = UniversityRepository(dir_path)
+        repository: University = University(dir_path)
 
         self.assertEqual(len(repository.get_student_summary()), 10)
         print('Student Summary')
@@ -222,7 +231,7 @@ class UniversityRepositoryTest(unittest.TestCase):
 
     def test_instructor_summary(self):
         dir_path: str = "./support"
-        repository: UniversityRepository = UniversityRepository(dir_path)
+        repository: University = University(dir_path)
 
         self.assertEqual(len(repository.get_instructor_summary()), 12)
         print('Instructor Summary')
