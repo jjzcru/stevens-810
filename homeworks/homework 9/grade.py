@@ -3,8 +3,7 @@
 """
 import os
 from pathlib import Path
-from collections import defaultdict
-from typing import List, Optional, Dict, Union
+from typing import List
 from enum import Enum
 
 
@@ -84,6 +83,14 @@ class Grades:
 
     def __init__(self, grades: List[Grade]) -> None:
         # Initialize the grade repository
+        # Validate information
+        if not isinstance(grades, List):
+            raise TypeError("grades is not instance of List")
+
+        for grade in grades:
+            if not isinstance(grade, Grade):
+                raise TypeError("grade is not instance of Grade")
+
         self.__grades = grades
 
     def all(self) -> List[Grade]:
