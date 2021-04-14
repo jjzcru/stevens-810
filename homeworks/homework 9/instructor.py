@@ -54,6 +54,13 @@ class Instructors:
 
     def __init__(self, instructors: List[Instructor]) -> None:
         # Initialize repository
+        # Type validation
+        if not isinstance(instructors, List):
+            raise TypeError("instructors is not instance of List")
+
+        for instructor in instructors:
+            if not isinstance(instructor, Instructor):
+                raise TypeError("instructor is not instance of Instructor")
 
         # Create a dictionary for the instructors
         records: Dict[str, Instructor] = defaultdict()

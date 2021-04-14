@@ -53,6 +53,13 @@ class Students:
 
     def __init__(self, students: List[Student]) -> None:
         # Initialize repository
+        # Type validation
+        if not isinstance(students, List):
+            raise TypeError("students is not instance of List")
+
+        for student in students:
+            if not isinstance(student, Student):
+                raise TypeError("student is not instance of Student")
 
         # Create a dictionary for the students
         records: Dict[str, Student] = defaultdict()
