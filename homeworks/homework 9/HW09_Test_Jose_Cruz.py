@@ -10,7 +10,7 @@
    CWID: 10467076
 """
 import unittest
-from typing import List
+from typing import List, Tuple
 import instructor
 from instructor import Instructors, Instructor
 import student
@@ -225,15 +225,35 @@ class UniversityTest(unittest.TestCase):
         dir_path: str = "./support"
         repository: University = University(dir_path)
         self.assertEqual(len(repository.get_students()), 10)
-        self.assertEqual(len(repository.get_student_summary()), 10)
+        summary: List[Tuple[str, str, List[str]]] = \
+            repository.get_student_summary()
+        self.assertEqual(len(summary), 10)
+        expected: List[Tuple[str, str, List[str]]] = [
+            ("10103", "Baldwin, C", ["CS 501", "SSW 564", "SSW 567",
+                                     "SSW 687"]),
+            ("10115", "Wyatt, X", ["CS 545", "SSW 564", "SSW 567", "SSW 687"]),
+            ("10172", "Forbes, I", ["SSW 555", "SSW 567"])
+        ]
+        for i in range(len(summary[0:3])):
+            self.assertEqual(summary[i], expected[i])
         print('Student Summary')
         repository.display_student_summary()
 
     def test_instructor_summary(self):
         dir_path: str = "./support"
         repository: University = University(dir_path)
+        summary: List[Tuple[str, str, str, str, int]] = \
+            repository.get_instructor_summary()
+        expected: List[Tuple[str, str, str, str, int]] = [
+            ("98765", "Einstein, A", "SFEN", "SSW 540", 3),
+            ("98765", "Einstein, A", "SFEN", "SSW 567", 4),
+            ("98764", "Feynman, R", "SFEN", "CS 501", 1),
+
+        ]
         self.assertEqual(len(repository.get_instructors()), 6)
-        self.assertEqual(len(repository.get_instructor_summary()), 12)
+        self.assertEqual(len(summary), 12)
+        for i in range(len(summary[0:3])):
+            self.assertEqual(summary[i], expected[i])
         print('Instructor Summary')
         repository.display_instructor_summary()
 
