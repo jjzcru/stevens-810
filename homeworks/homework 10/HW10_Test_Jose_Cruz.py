@@ -17,6 +17,8 @@ import student
 from student import Students, Student
 import grade
 from grade import Grades, Grade
+import major
+from major import Major, Majors
 from HW10_Jose_Cruz import University
 
 
@@ -202,6 +204,67 @@ class GradesTest(unittest.TestCase):
             repository.get(grade.GetBy.INSTRUCTOR, "98765")), 7)
         self.assertEqual(len(
             repository.get(grade.GetBy.INSTRUCTOR, "9876")), 0)
+
+
+class MajorsTest(unittest.TestCase):
+    """Test suite for Major"""
+
+    def test_major(self) -> None:
+        # Test grade object
+        with self.assertRaises(TypeError):
+            Major(0, 'Test', 'X')
+
+        with self.assertRaises(ValueError):
+            Major('', 'Test', 'test')
+
+        with self.assertRaises(TypeError):
+            Major('123', 'Test', [])
+
+    def test_from_file(self) -> None:
+        # Test getting a list of student from file
+        non_existing_file_path: str = "./test"
+        dir_path: str = "./support"
+        file_path: str = "./support/majors.txt"
+
+        with self.assertRaises(TypeError):
+            Majors.from_file(0)
+
+        with self.assertRaises(FileNotFoundError):
+            Majors.from_file(non_existing_file_path)
+
+        with self.assertRaises(ValueError):
+            Majors.from_file(dir_path)
+
+        majors: List[Major] = Majors.from_file(file_path, True)
+
+        self.assertEqual(len(majors), 13)
+        expected_result: List[Major] = [
+            Major("SFEN", "R", "SSW 540"),
+            Major("SFEN", "R", "SSW 564"),
+            Major("SFEN", "R", "SSW 555"),
+        ]
+        for i in range(len(majors[0:3])):
+            self.assertEqual(majors[i].name,
+                             expected_result[i].name)
+            self.assertEqual(majors[i].flag, expected_result[i].flag)
+            self.assertEqual(majors[i].course, expected_result[i].course)
+
+    def test_repository(self) -> None:
+        # Test repository functionalities
+        file_path: str = "./support/majors.txt"
+
+        majors: List[Major] = Majors.from_file(file_path, True)
+        repository: Majors = Majors(majors)
+
+        self.assertEqual(len(repository.all()), 13)
+        self.assertEqual(len(repository.get(major.GetBy.MAJOR, "SFEN")), 7)
+        self.assertEqual(len(repository.get(major.GetBy.MAJOR, "SYEN")), 6)
+
+        self.assertEqual(len(repository.get(major.GetBy.FLAG, "R")), 7)
+        self.assertEqual(len(repository.get(major.GetBy.FLAG, "E")), 6)
+
+        self.assertEqual(len(repository.get(major.GetBy.COURSE, "SSW 540")), 2)
+        self.assertEqual(len(repository.get(major.GetBy.COURSE, "SSW 810")), 1)
 
 
 class UniversityTest(unittest.TestCase):
