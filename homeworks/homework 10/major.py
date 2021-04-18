@@ -10,20 +10,18 @@ from enum import Enum
 
 class GetBy(Enum):
     # Enum for different ways to search
-    MAJOR = 1
-    COURSE = 2
-    FLAG = 3
+    NAME = 1
+    TYPE = 2
 
 
-class Major:
+class Course:
     # Represents major object
-    __slots__ = ["name", "flag", "course"]
+    __slots__ = ["name", "is_required"]
 
-    def __init__(self, major: str, flag: str, course: str) -> None:
+    def __init__(self, name: str, is_required: bool) -> None:
         # Initialize student object
-        self.name = major
-        self.flag = flag
-        self.course = course
+        self.name = name
+        self.is_required = is_required
         self.__validate()
 
     def __validate(self):
@@ -34,23 +32,60 @@ class Major:
         if len(self.name) == 0:
             raise ValueError("name can't be empty")
 
-        if type(self.flag) != str:
-            raise TypeError("flag must be a string")
+        if type(self.is_required) != bool:
+            raise TypeError("is_required must be a bool")
 
-        if len(self.flag) == 0:
-            raise ValueError("flag can't be empty")
 
-        if type(self.course) != str:
-            raise TypeError("course must be a string")
+class Major:
+    # Represents major object
+    __slots__ = ["name", "courses"]
 
-        if len(self.course) == 0:
-            raise ValueError("course can't be empty")
+    def __init__(self, name: str, courses: List[Course]) -> None:
+        # Initialize student object
+        self.name = name
+        self.courses = courses
+        self.__validate()
+
+    def __validate(self):
+        # Validate input information
+        if type(self.name) != str:
+            raise TypeError("name must be a string")
+
+        if len(self.name) == 0:
+            raise ValueError("name can't be empty")
+
+        if not isinstance(self.courses, List):
+            raise TypeError("majors is not instance of List")
+
+        for course in self.courses:
+            if not isinstance(course, Course):
+                raise TypeError("course is not instance of Course")
+
+    def get_course(self, by: Optional[GetBy], value: Union[str, bool]) -> \
+            Union[Course, List[Course]]:
+        # Get instructor/s information depending on different criteria
+        # Search a instructor by id
+        if by == GetBy.NAME:
+            for course in self.courses:
+                if course.name == value:
+                    return course
+            raise ValueError(f"course with name {value} do not exist")
+
+        # Search a course by type
+        if by == GetBy.TYPE:
+            if type(value) != bool:
+                raise TypeError(f"for {by} the value must be bool")
+
+            return [course for course in self.courses if
+                    course.is_required == value]
+
+        raise ValueError(f"{by} is not a supported get value")
 
 
 class Majors:
     # Process student information
     __slots__ = ["__majors"]
-    __majors: List[Major]
+    __majors: Dict[str, Major]
 
     def __init__(self, majors: List[Major]) -> None:
         # Initialize repository
@@ -70,26 +105,16 @@ class Majors:
         # Return all the students
         return self.__majors
 
-    def get(self, by: GetBy, value: str) -> List[Major]:
-        # Get major/s information depending on different criteria
-        if by == GetBy.MAJOR:
-            return [major for major in self.__majors if
-                    major.name == value]
-
-        if by == GetBy.FLAG:
-            return [major for major in self.__majors if
-                    major.flag == value]
-
-        if by == GetBy.COURSE:
-            return [major for major in self.__majors if
-                    major.course == value]
-
-        raise ValueError(f"{by} is not a supported get value")
+    def get(self, name: str) -> Major:
+        major: Optional[Major] = self.__majors.get(name)
+        if major is None:
+            raise ValueError(f"major with name {name} do not exist")
+        return major
 
     @staticmethod
-    def from_file(file_path: str, ignore_header: bool = False) -> List[Major]:
-        # Get a list of students from a file
-        # If ignore_header is True, it ignores the first line in the file
+    def from_file(file_path: str,
+                  ignore_header: bool = False) -> List[Major]:
+        # Get a list of instructors from a file
         majors: List[Major] = []
         if type(file_path) != str:
             raise TypeError("file_path must be a str")
@@ -102,6 +127,7 @@ class Majors:
             raise ValueError(f"the path {file_path} is not a file")
 
         line_counter: int = 0
+        majors_dict: Dict[str, List[Course]] = defaultdict()
         try:
             with open(file_path, "r") as file:
                 for line in file.readlines():
@@ -120,7 +146,16 @@ class Majors:
                         raise ValueError(
                             f"expect {3} fields but {len(terms)} were found")
 
-                    majors.append(Major(terms[0], terms[1], terms[2]))
+                    if terms[1] != "R" and terms[1] != "E":
+                        raise ValueError(
+                            f"{terms[1]} is an invalid flag value for course")
+
+                    if majors_dict.get(terms[0]) is None:
+                        majors_dict[terms[0]] = [Course(terms[2],
+                                                        terms[1] == "R")]
+
+                    majors_dict[terms[0]].append(Course(terms[2],
+                                                        terms[1] == "R"))
                 else:
                     file.close()
         except IOError as e:
@@ -128,5 +163,8 @@ class Majors:
         except ValueError as e:
             raise ValueError(
                 f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
+
+        for name, courses in majors_dict.items():
+            majors.append(Major(name, courses))
 
         return majors

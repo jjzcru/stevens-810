@@ -18,7 +18,7 @@ from student import Students, Student
 import grade
 from grade import Grades, Grade
 import major
-from major import Major, Majors
+from major import Major, Majors, Course
 from HW10_Jose_Cruz import University
 
 
@@ -206,6 +206,7 @@ class GradesTest(unittest.TestCase):
             repository.get(grade.GetBy.INSTRUCTOR, "9876")), 0)
 
 
+# TODO Fix this test
 class MajorsTest(unittest.TestCase):
     """Test suite for Major"""
 
@@ -239,15 +240,11 @@ class MajorsTest(unittest.TestCase):
 
         self.assertEqual(len(majors), 13)
         expected_result: List[Major] = [
-            Major("SFEN", "R", "SSW 540"),
-            Major("SFEN", "R", "SSW 564"),
-            Major("SFEN", "R", "SSW 555"),
+            Major("SFEN", Course("SSW 540", True)),
         ]
         for i in range(len(majors[0:3])):
             self.assertEqual(majors[i].name,
                              expected_result[i].name)
-            self.assertEqual(majors[i].flag, expected_result[i].flag)
-            self.assertEqual(majors[i].course, expected_result[i].course)
 
     def test_repository(self) -> None:
         # Test repository functionalities
@@ -319,6 +316,14 @@ class UniversityTest(unittest.TestCase):
             self.assertEqual(summary[i], expected[i])
         print('Instructor Summary')
         repository.display_instructor_summary()
+
+    # TODO Complete test
+    def test_major_summary(self):
+        dir_path: str = "./support"
+        repository: University = University(dir_path)
+        self.assertEqual(len(repository.get_majors()), 2)
+        print('Majors Summary')
+        repository.display_major_summary()
 
 
 if __name__ == "__main__":

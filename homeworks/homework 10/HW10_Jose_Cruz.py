@@ -20,6 +20,8 @@ import student
 from student import Students, Student
 import grade
 from grade import Grades, Grade
+import major
+from major import Majors, Major
 
 
 class University:
@@ -41,14 +43,21 @@ class University:
         self.directory = directory
         self.__validate_files()
 
+        ignore_headers: bool = True
+
         instructors: List[Instructor] = Instructors.from_file(
-            self.instructors_path)
-        students: List[Student] = Students.from_file(self.student_path)
-        grades: List[Grade] = Grades.from_file(self.grades_path)
+            self.instructors_path, ignore_headers)
+        students: List[Student] = Students.from_file(self.student_path,
+                                                     ignore_headers)
+        grades: List[Grade] = Grades.from_file(self.grades_path,
+                                               ignore_headers)
+        majors: List[Major] = Majors.from_file(self.majors_path,
+                                               ignore_headers)
 
         self.instructors: Instructors = Instructors(instructors)
         self.students: Students = Students(students)
         self.grades: Grades = Grades(grades)
+        self.majors: Majors = Majors(majors)
         self.__validate_data_integrity()
 
     def __validate_files(self) -> None:
@@ -56,6 +65,7 @@ class University:
         students: str = os.path.join(self.directory, "students.txt")
         instructors: str = os.path.join(self.directory, "instructors.txt")
         grades: str = os.path.join(self.directory, "grades.txt")
+        majors: str = os.path.join(self.directory, "majors.txt")
 
         # Validate path exists
         if not os.path.exists(students):
@@ -67,10 +77,14 @@ class University:
         if not os.path.exists(grades):
             raise FileNotFoundError(f"the path {grades} do not exist")
 
+        if not os.path.exists(majors):
+            raise FileNotFoundError(f"the path {majors} do not exist")
+
         # Validates the path are files
         student_path: Path = Path(students)
         instructors_path: Path = Path(instructors)
         grades_path: Path = Path(grades)
+        majors_path: Path = Path(majors)
         if not student_path.is_file():
             raise IsADirectoryError(f"the path {students} is a directory")
 
@@ -80,9 +94,13 @@ class University:
         if not grades_path.is_file():
             raise IsADirectoryError(f"the path {grades} is a directory")
 
+        if not majors_path.is_file():
+            raise IsADirectoryError(f"the path {majors_path} is a directory")
+
         self.student_path = students
         self.instructors_path = instructors
         self.grades_path = grades
+        self.majors_path = majors
 
     def __validate_data_integrity(self) -> None:
         """Validate that all the professor and student reference exists"""
@@ -102,6 +120,10 @@ class University:
         # Return a list of all the grades in the university
         return self.grades.all()
 
+    def get_majors(self) -> List[Major]:
+        # Return a list of all the majors
+        return self.majors.all()
+
     def get_student_summary(self) -> List[Tuple[str, str, List[str]]]:
         # Calculate the summary for students
         summary: List[Tuple[str, str, List]] = []
@@ -113,6 +135,16 @@ class University:
             summary.append((learner.cwid, learner.name, sorted(courses)))
 
         return summary
+
+    def get_major_summary(self) -> List[Tuple[str, List[str], List[str]]]:
+        # Calculate the summary for majors
+        return [(
+            m.name,
+            sorted([course.name
+                    for course in m.get_course(major.GetBy.TYPE, True)]),
+            sorted([course.name
+                    for course in m.get_course(major.GetBy.TYPE, False)])
+        ) for m in self.get_majors()]
 
     def display_student_summary(self) -> None:
         """Display the summary as a table"""
@@ -167,4 +199,18 @@ class University:
 
         for cwid, name, dept, course, students in self.get_instructor_summary():
             table.add_row([cwid, name, dept, course, students])
+        print(table)
+
+    def display_major_summary(self) -> None:
+        """Display the summary as a table"""
+        table = PrettyTable()
+        table.field_names = [
+            "Major",
+            "Required courses",
+            "Electives"
+        ]
+
+        for name, required_courses, optional_courses in \
+                self.get_major_summary():
+            table.add_row([name, required_courses, optional_courses])
         print(table)
