@@ -114,7 +114,7 @@ class Grades:
         raise ValueError(f"{by} is not a supported get value")
 
     @staticmethod
-    def from_file(file_path: str) -> List[Grade]:
+    def from_file(file_path: str, ignore_header: bool = False) -> List[Grade]:
         # Get a list of grades from a file
         grades: List[Grade] = []
         if type(file_path) != str:
@@ -134,11 +134,14 @@ class Grades:
                     line = line.strip("\n")
                     line_counter += 1
 
+                    if ignore_header and line_counter == 1:
+                        continue
+
                     # Skip empty lines
                     if len(line) == 0:
                         continue
 
-                    terms: List[str] = line.split("\t") if len(line) > 0 else []
+                    terms: List[str] = line.split("|") if len(line) > 0 else []
 
                     if len(terms) != 4:
                         raise ValueError(

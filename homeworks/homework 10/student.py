@@ -94,8 +94,9 @@ class Students:
         raise ValueError(f"{by} is not a supported get value")
 
     @staticmethod
-    def from_file(file_path: str) -> List[Student]:
+    def from_file(file_path: str, ignore_header: bool = False) -> List[Student]:
         # Get a list of students from a file
+        # If ignore_header is True, it ignores the first line in the file
         students: List[Student] = []
         if type(file_path) != str:
             raise TypeError("file_path must be a str")
@@ -113,12 +114,14 @@ class Students:
                 for line in file.readlines():
                     line = line.strip("\n")
                     line_counter += 1
+                    if ignore_header and line_counter == 1:
+                        continue
 
                     # Skip empty lines
                     if len(line) == 0:
                         continue
 
-                    terms: List[str] = line.split("\t") if len(line) > 0 else []
+                    terms: List[str] = line.split(";") if len(line) > 0 else []
 
                     if len(terms) != 3:
                         raise ValueError(

@@ -17,7 +17,7 @@ import student
 from student import Students, Student
 import grade
 from grade import Grades, Grade
-from HW09_Jose_Cruz import University
+from HW10_Jose_Cruz import University
 
 
 class StudentsTest(unittest.TestCase):
@@ -38,7 +38,7 @@ class StudentsTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             Students.from_file(dir_path)
 
-        students: List[Student] = Students.from_file(file_path)
+        students: List[Student] = Students.from_file(file_path, True)
 
         self.assertEqual(len(students), 10)
         expected_result: List[Student] = [
@@ -62,7 +62,7 @@ class StudentsTest(unittest.TestCase):
         # Test repository functionalities
         file_path: str = "./support/students.txt"
 
-        students: List[Student] = Students.from_file(file_path)
+        students: List[Student] = Students.from_file(file_path, True)
         repository: Students = Students(students)
 
         self.assertEqual(len(repository.all()), 10)
@@ -97,7 +97,7 @@ class InstructorsTest(unittest.TestCase):
             Instructors.from_file(dir_path)
 
         instructors: List[Instructor] = \
-            Instructors.from_file(file_path)
+            Instructors.from_file(file_path, True)
 
         self.assertEqual(len(instructors), 6)
         expected_result: List[Instructor] = [
@@ -120,7 +120,7 @@ class InstructorsTest(unittest.TestCase):
         file_path: str = "./support/instructors.txt"
 
         instructors: List[Instructor] = \
-            Instructors.from_file(file_path)
+            Instructors.from_file(file_path, True)
         repository: Instructors = Instructors(instructors)
 
         self.assertEqual(len(repository.all()), 6)
@@ -170,7 +170,7 @@ class GradesTest(unittest.TestCase):
             Grades.from_file(dir_path)
 
         grades: List[Grade] = \
-            Grades.from_file(file_path)
+            Grades.from_file(file_path, True)
 
         self.assertEqual(len(grades), 22)
         expected_result: List[Grade] = [
@@ -190,7 +190,7 @@ class GradesTest(unittest.TestCase):
         # Test repository functionalities
         file_path: str = "./support/grades.txt"
 
-        grades: List[Grade] = Grades.from_file(file_path)
+        grades: List[Grade] = Grades.from_file(file_path, True)
         repository: Grades = Grades(grades)
 
         self.assertEqual(len(repository.all()), 22)
