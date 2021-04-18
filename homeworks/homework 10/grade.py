@@ -7,7 +7,7 @@ from typing import List, Dict
 from enum import Enum
 
 grade_value_map: Dict[str, float] = {
-    "A": 4.0,
+    "A":    4.0,
     "A-": 	3.75,
     "B+": 	3.25,
     "B": 	3.0,
