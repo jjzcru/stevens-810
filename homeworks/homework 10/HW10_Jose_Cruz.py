@@ -12,7 +12,7 @@
 import os
 from pathlib import Path
 from collections import defaultdict
-from typing import List, Dict, Tuple, Set
+from typing import List, Dict, Tuple, Set, Union
 from prettytable import PrettyTable
 import instructor
 from instructor import Instructors, Instructor
@@ -21,7 +21,7 @@ from student import Students, Student
 import grade
 from grade import Grades, Grade
 import major
-from major import Majors, Major
+from major import Majors, Major, Course
 
 
 class University:
@@ -124,15 +124,82 @@ class University:
         # Return a list of all the majors
         return self.majors.all()
 
-    def get_student_summary(self) -> List[Tuple[str, str, List[str]]]:
+    def get_student_summary(self) -> List[Tuple[
+        str,
+        str,
+        str,
+        List[str],
+        List[str],
+        List[str],
+        float]
+    ]:
         # Calculate the summary for students
-        summary: List[Tuple[str, str, List]] = []
+        summary: List[Tuple[
+            str,
+            str,
+            str,
+            List[str],
+            List[str],
+            List[str],
+            float
+        ]] = []
 
         for learner in self.get_students():
             courses: List[str] = [item.course for item in
                                   self.grades.get(grade.GetBy.STUDENT,
                                                   learner.cwid)]
-            summary.append((learner.cwid, learner.name, sorted(courses)))
+
+            gpa: float = self.grades.get_student_gpa(learner.cwid)
+            # Get a list of all the courses from the major
+            major_courses: List[Course] = self.majors.get(learner.major).courses
+
+            # If filter to get all the required courses
+            required_courses: List[Course] = [course for course in major_courses
+                                              if course.is_required]
+
+            # I transform them to a set so i can use set theory
+            major_courses_set: Set[str] = set(
+                [m.name for m in required_courses]
+            )
+
+            # Get a list of all the elective courses from the major
+            elective_courses: List[Course] = [course for course in major_courses
+                                              if not course.is_required]
+            # I transform them to a set so i can use set theory
+            elective_courses_set: Set[str] = set(
+                [m.name for m in elective_courses]
+            )
+
+            # Transform all the completed course to a set
+            completed_courses: Set[str] = set(courses)
+
+            """
+                Do a set difference between the major courses and the 
+                completed courses to get what are the remaining courses
+            """
+            remaining_required_courses: Set[str] = \
+                major_courses_set.difference(completed_courses)
+
+            """
+                If there is a difference between the remaining elective 
+                and the total of elective in the major i know that at least
+                one elective was chosen. In that case there are not more 
+                pending elective.
+            """
+            remaining_elective: Set[str] = \
+                elective_courses_set.difference(completed_courses)
+            remaining_elective_courses: List[str] = list(remaining_elective) \
+                if len(remaining_elective) == len(elective_courses_set) \
+                else []
+
+            summary.append((
+                learner.cwid,
+                learner.name,
+                learner.major,
+                list(sorted(completed_courses)),
+                list(sorted(remaining_required_courses)),
+                list(sorted(remaining_elective_courses)),
+                gpa))
 
         return summary
 
@@ -152,11 +219,24 @@ class University:
         table.field_names = [
             "CWID",
             "Name",
+            "Major",
             "Completed Courses",
+            "Remaining Required",
+            "Remaining Elective",
+            "GPA"
         ]
 
-        for cwid, name, courses in self.get_student_summary():
-            table.add_row([cwid, name, courses])
+        for cwid, name, m, courses, remaining_req, remaining_ele, gpa in \
+                self.get_student_summary():
+            table.add_row([
+                cwid,
+                name,
+                m,
+                courses,
+                remaining_req,
+                remaining_ele,
+                round(gpa, 2)
+            ])
         print(table)
 
     def get_instructor_summary(self) -> List[Tuple[str, str, str, str, int]]:

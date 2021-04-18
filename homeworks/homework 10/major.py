@@ -97,9 +97,12 @@ class Majors:
             if not isinstance(major, Major):
                 raise TypeError("major is not instance of Major")
 
-        # Create a dictionary for the students
+        # Create a dictionary for the instructors
+        records: Dict[str, Major] = defaultdict()
+        for major in majors:
+            records[major.name] = major
 
-        self.__majors = majors
+        self.__majors = records
 
     def all(self) -> List[Major]:
         # Return all the students
