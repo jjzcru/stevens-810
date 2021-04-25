@@ -238,7 +238,7 @@ class MajorsTest(unittest.TestCase):
 
         majors: List[Major] = Majors.from_file(file_path, True)
 
-        self.assertEqual(len(majors), 13)
+        self.assertEqual(len(majors), 2)
         expected_result: List[Major] = [
             Major("SFEN", Course("SSW 540", True)),
         ]
