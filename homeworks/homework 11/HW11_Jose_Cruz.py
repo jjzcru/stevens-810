@@ -45,6 +45,8 @@ class University:
 
         self.conn = self.get_connection(db_path)
         self.instructors = Instructors(self.conn)
+        self.students = Students(self.conn)
+        self.majors = Majors(self.conn)
 
     def get_connection(self, db_path: str):
         # Get database connection

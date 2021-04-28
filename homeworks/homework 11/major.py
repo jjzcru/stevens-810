@@ -1,11 +1,10 @@
 """
-    Handles everything related to university students
+    Handles everything related to university majors
 """
-import os
-from pathlib import Path
 from collections import defaultdict
 from typing import List, Optional, Dict, Union
 from enum import Enum
+from sqlite3 import Connection, Cursor, Row
 
 
 class GetBy(Enum):
@@ -83,91 +82,45 @@ class Major:
 
 
 class Majors:
-    # Process student information
-    __slots__ = ["__majors"]
+    # Process major information
+    __slots__ = ["__majors", "__conn"]
     __majors: Dict[str, Major]
 
-    def __init__(self, majors: List[Major]) -> None:
+    def __init__(self, conn: Connection) -> None:
         # Initialize repository
         # Type validation
-        if not isinstance(majors, List):
-            raise TypeError("majors is not instance of List")
+        if not isinstance(conn, Connection):
+            raise TypeError("connection is not instance of Connection")
 
-        for major in majors:
-            if not isinstance(major, Major):
-                raise TypeError("major is not instance of Major")
-
-        # Create a dictionary for the instructors
-        records: Dict[str, Major] = defaultdict()
-        for major in majors:
-            records[major.name] = major
-
-        self.__majors = records
+        self.__conn = conn
 
     def all(self) -> List[Major]:
-        # Return all the students
-        return self.__majors
+        # Return all the instructors
+        cursor: Cursor = self.__conn.cursor()
+        cursor.execute("SELECT id FROM major ORDER BY id;")
+
+        rows: List[Row] = cursor.fetchall()
+        majors: Dict[str, Major] = defaultdict()
+        for row in rows:
+            major: str = row[0]
+            courses: List[Course] = self.get_courses(major)
+            majors[major] = Major(major, courses)
+
+        return majors
+
+    def get_courses(self, major: str) -> List[Course]:
+        # Get a list of courses from a major
+        cursor: Cursor = self.__conn.cursor()
+        cursor.execute("SELECT id, flag FROM course "
+                       f"WHERE major = '{major}' ORDER BY id;")
+
+        rows: List[Row] = cursor.fetchall()
+        return [Course(row[0], row[1] == "R") for row in rows]
 
     def get(self, name: str) -> Major:
+        # Get a major by its name
         major: Optional[Major] = self.__majors.get(name)
         if major is None:
             raise ValueError(f"major with name {name} do not exist")
+
         return major
-
-    @staticmethod
-    def from_file(file_path: str,
-                  ignore_header: bool = False) -> List[Major]:
-        # Get a list of instructors from a file
-        majors: List[Major] = []
-        if type(file_path) != str:
-            raise TypeError("file_path must be a str")
-
-        # Verifies that the file exist
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"the path {file_path} do not exist")
-
-        if not Path(file_path).is_file():
-            raise ValueError(f"the path {file_path} is not a file")
-
-        line_counter: int = 0
-        majors_dict: Dict[str, List[Course]] = defaultdict()
-        try:
-            with open(file_path, "r") as file:
-                for line in file.readlines():
-                    line = line.strip("\n")
-                    line_counter += 1
-                    if ignore_header and line_counter == 1:
-                        continue
-
-                    # Skip empty lines
-                    if len(line) == 0:
-                        continue
-
-                    terms: List[str] = line.split("\t") if len(line) > 0 else []
-
-                    if len(terms) != 3:
-                        raise ValueError(
-                            f"expect {3} fields but {len(terms)} were found")
-
-                    if terms[1] != "R" and terms[1] != "E":
-                        raise ValueError(
-                            f"{terms[1]} is an invalid flag value for course")
-
-                    if majors_dict.get(terms[0]) is None:
-                        majors_dict[terms[0]] = [Course(terms[2],
-                                                        terms[1] == "R")]
-
-                    majors_dict[terms[0]].append(Course(terms[2],
-                                                        terms[1] == "R"))
-                else:
-                    file.close()
-        except IOError as e:
-            print(f"Error working with the file {file_path} \n{str(e)}")
-        except ValueError as e:
-            raise ValueError(
-                f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
-
-        for name, courses in majors_dict.items():
-            majors.append(Major(name, courses))
-
-        return majors

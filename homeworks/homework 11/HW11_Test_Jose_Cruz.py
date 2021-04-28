@@ -144,6 +144,46 @@ class StudentsTest(unittest.TestCase):
         conn.close()
 
 
+class MajorsTest(unittest.TestCase):
+    """Test suite for Major"""
+
+    def test_major(self) -> None:
+        # Test major object
+        with self.assertRaises(TypeError):
+            Major(0, 'Test')
+
+        with self.assertRaises(ValueError):
+            Major('', 'Test')
+
+        with self.assertRaises(TypeError):
+            Major('123', 'Test')
+
+    def test_from_file(self) -> None:
+        # Test getting a list of student from file
+        db_path: str = "./db.sqlite"
+
+        with self.assertRaises(TypeError):
+            Majors(0)
+
+        with self.assertRaises(TypeError):
+            Majors(db_path)
+
+        conn: Connection = sqlite3.connect(db_path)
+
+        Majors(conn)
+        conn.close()
+
+    def test_get_all(self) -> None:
+        # Test repository functionalities
+        db_path: str = "./db.sqlite"
+        conn: Connection = sqlite3.connect(db_path)
+
+        repository: Majors = Majors(conn)
+        majors: List[Major] = repository.all()
+        self.assertEqual(len(majors), 2)
+        conn.close()
+
+
 class GradesTest(unittest.TestCase):
     """Test suite for Grades"""
 
@@ -206,64 +246,6 @@ class GradesTest(unittest.TestCase):
             repository.get(grade.GetBy.INSTRUCTOR, "98765")), 7)
         self.assertEqual(len(
             repository.get(grade.GetBy.INSTRUCTOR, "9876")), 0)
-
-
-# TODO Fix this test
-class MajorsTest(unittest.TestCase):
-    """Test suite for Major"""
-
-    def test_major(self) -> None:
-        # Test grade object
-        with self.assertRaises(TypeError):
-            Major(0, 'Test', 'X')
-
-        with self.assertRaises(ValueError):
-            Major('', 'Test', 'test')
-
-        with self.assertRaises(TypeError):
-            Major('123', 'Test', [])
-
-    def test_from_file(self) -> None:
-        # Test getting a list of student from file
-        non_existing_file_path: str = "./test"
-        dir_path: str = "./support"
-        file_path: str = "./support/majors.txt"
-
-        with self.assertRaises(TypeError):
-            Majors.from_file(0)
-
-        with self.assertRaises(FileNotFoundError):
-            Majors.from_file(non_existing_file_path)
-
-        with self.assertRaises(ValueError):
-            Majors.from_file(dir_path)
-
-        majors: List[Major] = Majors.from_file(file_path, True)
-
-        self.assertEqual(len(majors), 2)
-        expected_result: List[Major] = [
-            Major("SFEN", Course("SSW 540", True)),
-        ]
-        for i in range(len(majors[0:3])):
-            self.assertEqual(majors[i].name,
-                             expected_result[i].name)
-
-    def test_repository(self) -> None:
-        # Test repository functionalities
-        file_path: str = "./support/majors.txt"
-
-        majors: List[Major] = Majors.from_file(file_path, True)
-        repository: Majors = Majors(majors)
-
-        self.assertEqual(len(repository.all()), 13)
-        self.assertEqual(len(repository.get(major.GetBy.MAJOR, "SFEN")), 7)
-        self.assertEqual(len(repository.get(major.GetBy.MAJOR, "SYEN")), 6)
-
-        self.assertEqual(len(repository.get(major.GetBy.FLAG, "R")), 7)
-        self.assertEqual(len(repository.get(major.GetBy.FLAG, "E")), 6)
-
-        self.assertEqual(len(repository.get(major.GetBy.COURSE, "SSW 540")), 2)
-        self.assertEqual(len(repository.get(major.GetBy.COURSE, "SSW 810")), 1)
 
 
 class UniversityTest(unittest.TestCase):
