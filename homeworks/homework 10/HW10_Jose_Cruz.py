@@ -120,7 +120,7 @@ class University:
         # Return a list of all the grades in the university
         return self.grades.all()
 
-    def get_majors(self) -> List[Major]:
+    def get_majors(self) -> Dict[str, Major]:
         # Return a list of all the majors
         return self.majors.all()
 
@@ -211,7 +211,7 @@ class University:
                     for course in m.get_course(major.GetBy.TYPE, True)]),
             sorted([course.name
                     for course in m.get_course(major.GetBy.TYPE, False)])
-        ) for m in self.get_majors()]
+        ) for k, m in self.get_majors().items()]
 
     def display_student_summary(self) -> None:
         """Display the summary as a table"""

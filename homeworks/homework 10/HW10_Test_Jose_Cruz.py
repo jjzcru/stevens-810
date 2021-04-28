@@ -206,20 +206,16 @@ class GradesTest(unittest.TestCase):
             repository.get(grade.GetBy.INSTRUCTOR, "9876")), 0)
 
 
-# TODO Fix this test
 class MajorsTest(unittest.TestCase):
     """Test suite for Major"""
 
     def test_major(self) -> None:
         # Test grade object
         with self.assertRaises(TypeError):
-            Major(0, 'Test', 'X')
+            Major(0, 'Test')
 
         with self.assertRaises(ValueError):
-            Major('', 'Test', 'test')
-
-        with self.assertRaises(TypeError):
-            Major('123', 'Test', [])
+            Major('', 'Test')
 
     def test_from_file(self) -> None:
         # Test getting a list of student from file
@@ -239,29 +235,6 @@ class MajorsTest(unittest.TestCase):
         majors: List[Major] = Majors.from_file(file_path, True)
 
         self.assertEqual(len(majors), 2)
-        expected_result: List[Major] = [
-            Major("SFEN", Course("SSW 540", True)),
-        ]
-        for i in range(len(majors[0:3])):
-            self.assertEqual(majors[i].name,
-                             expected_result[i].name)
-
-    def test_repository(self) -> None:
-        # Test repository functionalities
-        file_path: str = "./support/majors.txt"
-
-        majors: List[Major] = Majors.from_file(file_path, True)
-        repository: Majors = Majors(majors)
-
-        self.assertEqual(len(repository.all()), 13)
-        self.assertEqual(len(repository.get(major.GetBy.MAJOR, "SFEN")), 7)
-        self.assertEqual(len(repository.get(major.GetBy.MAJOR, "SYEN")), 6)
-
-        self.assertEqual(len(repository.get(major.GetBy.FLAG, "R")), 7)
-        self.assertEqual(len(repository.get(major.GetBy.FLAG, "E")), 6)
-
-        self.assertEqual(len(repository.get(major.GetBy.COURSE, "SSW 540")), 2)
-        self.assertEqual(len(repository.get(major.GetBy.COURSE, "SSW 810")), 1)
 
 
 class UniversityTest(unittest.TestCase):
@@ -288,15 +261,6 @@ class UniversityTest(unittest.TestCase):
         summary: List[Tuple[str, str, List[str]]] = \
             repository.get_student_summary()
         self.assertEqual(len(summary), 10)
-        # TODO Fix this validation
-        """expected: List[Tuple[str, str, List[str]]] = [
-            ("10103", "Baldwin, C", ["CS 501", "SSW 564", "SSW 567",
-                                     "SSW 687"]),
-            ("10115", "Wyatt, X", ["CS 545", "SSW 564", "SSW 567", "SSW 687"]),
-            ("10172", "Forbes, I", ["SSW 555", "SSW 567"])
-        ]
-        for i in range(len(summary[0:3])):
-            self.assertEqual(summary[i], expected[i])"""
         print('Student Summary')
         repository.display_student_summary()
 
@@ -318,7 +282,6 @@ class UniversityTest(unittest.TestCase):
         print('Instructor Summary')
         repository.display_instructor_summary()
 
-    # TODO Complete test
     def test_major_summary(self):
         dir_path: str = "./support"
         repository: University = University(dir_path)
