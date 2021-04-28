@@ -15,7 +15,7 @@ from collections import defaultdict
 from typing import List, Dict, Tuple, Set, Union, Optional
 from prettytable import PrettyTable
 import sqlite3
-from sqlite3 import Error, Connection
+from sqlite3 import Error, Connection, Cursor
 import instructor
 from instructor import Instructors, Instructor
 import student
@@ -174,6 +174,20 @@ class University:
                     for course in m.get_course(major.GetBy.TYPE, False)])
         ) for k, m in majors.items()], key=lambda m: m[0], reverse=True)
 
+    def get_student_grade_summary(self) -> List[Tuple[str, str, str, str, str]]:
+        cursor: Cursor = self.conn.cursor()
+        cursor.execute("""SELECT s.name as name,
+               s.cwid as cwid,
+               g.course as course,
+               g.grade as "grade",
+               i.name as instructor_name
+            FROM student s
+            LEFT JOIN grade g on s.cwid = g.student_cwid
+            LEFT JOIN instructor i on g.instructor_cwid = i.cwid
+            ORDER BY s.name, g.grade;""")
+        return [(row[0], row[1], row[2], row[3], row[4]) for row
+                in cursor.fetchall()]
+
     def display_student_summary(self) -> None:
         """Display the summary as a table"""
         table = PrettyTable()
@@ -257,4 +271,20 @@ class University:
         for name, required_courses, optional_courses in \
                 self.get_major_summary():
             table.add_row([name, required_courses, optional_courses])
+        print(table)
+
+    def student_grades_table_db(self) -> None:
+        """Display the summary as a table"""
+        table = PrettyTable()
+        table.field_names = [
+            "Name",
+            "CWID",
+            "Course",
+            "Grade",
+            "Instructor"
+        ]
+
+        for name, cwid, course, g, inst in \
+                self.get_student_grade_summary():
+            table.add_row([name, cwid, course, g, inst])
         print(table)

@@ -302,9 +302,17 @@ class UniversityTest(unittest.TestCase):
         # Test major summary
         db_path: str = "./db.sqlite"
         repository: University = University(db_path)
-        self.assertEqual(len(repository.get_majors()), 2)
+        self.assertEqual(len(repository.get_major_summary()), 2)
         print('Majors Summary')
         repository.display_major_summary()
+
+    def test_student_grades_table_db(self):
+        # Test student grade summary
+        db_path: str = "./db.sqlite"
+        repository: University = University(db_path)
+        self.assertEqual(len(repository.get_student_grade_summary()), 9)
+        print('Student Grade Summary')
+        repository.student_grades_table_db()
 
 
 if __name__ == "__main__":
