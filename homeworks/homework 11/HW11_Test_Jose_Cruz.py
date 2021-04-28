@@ -10,7 +10,7 @@
    CWID: 10467076
 """
 import unittest
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import sqlite3
 from sqlite3 import Error, Connection
 import instructor
@@ -28,7 +28,7 @@ class InstructorsTest(unittest.TestCase):
     """Test suite for Instructor"""
 
     def test_from_file(self) -> None:
-        # Test getting a list of student from file
+        # Test getting a list of instructors from sqlite
         db_path: str = "./db.sqlite"
 
         with self.assertRaises(TypeError):
@@ -48,18 +48,8 @@ class InstructorsTest(unittest.TestCase):
         conn: Connection = sqlite3.connect(db_path)
 
         repository: Instructors = Instructors(conn)
-        instructors: List[Instructor] = repository.all()
+        instructors: Dict[str, Instructor] = repository.all()
         self.assertEqual(len(instructors), 3)
-        expected_result: List[Instructor] = [
-            Instructor("98762", "Hawking, S", "CS"),
-            Instructor("98763", "Rowland, J", "SFEN"),
-            Instructor("98764", "Cohen, R", "SFEN"),
-        ]
-        for i in range(len(instructors)):
-            self.assertEqual(instructors[i].cwid, expected_result[i].cwid)
-            self.assertEqual(instructors[i].name, expected_result[i].name)
-            self.assertEqual(instructors[i].department,
-                             expected_result[i].department)
         conn.close()
 
     def test_get_by_id(self) -> None:
@@ -94,64 +84,64 @@ class InstructorsTest(unittest.TestCase):
         conn.close()
 
 
-
-
 class StudentsTest(unittest.TestCase):
-    """Test suite for Students"""
+    """Test suite for Student"""
 
     def test_from_file(self) -> None:
         # Test getting a list of student from file
-        non_existing_file_path: str = "./test"
-        dir_path: str = "./support"
-        file_path: str = "./support/students.txt"
+        db_path: str = "./db.sqlite"
 
         with self.assertRaises(TypeError):
-            Students.from_file(0)
+            Students(0)
 
-        with self.assertRaises(FileNotFoundError):
-            Students.from_file(non_existing_file_path)
+        with self.assertRaises(TypeError):
+            Students(db_path)
 
-        with self.assertRaises(ValueError):
-            Students.from_file(dir_path)
+        conn: Connection = sqlite3.connect(db_path)
 
-        students: List[Student] = Students.from_file(file_path, True)
+        Students(conn)
+        conn.close()
 
-        self.assertEqual(len(students), 10)
-        expected_result: List[Student] = [
-            Student("10103", "Baldwin, C", "SFEN"),
-            Student("10115", "Wyatt, X", "SFEN"),
-            Student("10172", "Forbes, I", "SFEN"),
-            Student("10175", "Erickson, D", "SFEN"),
-            Student("10183", "Chapman, O", "SFEN"),
-            Student("11399", "Cordova, I", "SYEN"),
-            Student("11461", "Wright, U", "SYEN"),
-            Student("11658", "Kelly, P", "SYEN"),
-            Student("11714", "Morton, A", "SYEN"),
-            Student("11788", "Fuller, E", "SYEN"),
-        ]
-        for i in range(len(students)):
-            self.assertEqual(students[i].cwid, expected_result[i].cwid)
-            self.assertEqual(students[i].name, expected_result[i].name)
-            self.assertEqual(students[i].major, expected_result[i].major)
-
-    def test_repository(self) -> None:
+    def test_get_all(self) -> None:
         # Test repository functionalities
-        file_path: str = "./support/students.txt"
+        db_path: str = "./db.sqlite"
+        conn: Connection = sqlite3.connect(db_path)
 
-        students: List[Student] = Students.from_file(file_path, True)
-        repository: Students = Students(students)
+        repository: Students = Students(conn)
+        students: Dict[str, Student] = repository.all()
+        self.assertEqual(len(students), 4)
+        conn.close()
 
-        self.assertEqual(len(repository.all()), 10)
-        expected: Student = Student("10103", "Baldwin, C", "SFEN")
+    def test_get_by_id(self) -> None:
+        # Test get student by id
+        db_path: str = "./db.sqlite"
+        conn: Connection = sqlite3.connect(db_path)
+
+        repository: Students = Students(conn)
+        with self.assertRaises(ValueError):
+            repository.get(student.GetBy.ID, "fff")
 
         learner: Student = repository.get(student.GetBy.ID, "10103")
-        self.assertEqual(expected.cwid, learner.cwid)
-        self.assertEqual(expected.name, learner.name)
-        self.assertEqual(expected.major, learner.major)
-        self.assertEqual(len(repository.get(student.GetBy.MAJOR, "SFEN")), 5)
-        self.assertEqual(len(repository.get(student.GetBy.MAJOR, "SYEN")), 5)
-        with self.assertRaises(ValueError):
-            repository.get(student.GetBy.ID, "TEST")
+        self.assertEqual(learner.cwid, "10103")
+        self.assertEqual(learner.name, "Jobs, S")
+        self.assertEqual(learner.major, "SFEN")
+        conn.close()
+
+    def test_get_by_major(self) -> None:
+        # Test get instructor by department
+        db_path: str = "./db.sqlite"
+        conn: Connection = sqlite3.connect(db_path)
+
+        repository: Students = Students(conn)
+        students: List[Student] = \
+            repository.get(student.GetBy.MAJOR, "CS")
+
+        self.assertEqual(len(students), 1)
+
+        self.assertEqual(students[0].cwid, "11714")
+        self.assertEqual(students[0].name, "Gates, B")
+        self.assertEqual(students[0].major, "CS")
+        conn.close()
 
 
 class GradesTest(unittest.TestCase):

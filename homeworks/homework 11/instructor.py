@@ -1,9 +1,6 @@
 """
     Handles everything related to university instructors
 """
-
-import os
-from pathlib import Path
 from collections import defaultdict
 from typing import List, Optional, Dict, Union
 from enum import Enum
@@ -61,14 +58,22 @@ class Instructors:
 
         self.__conn = conn
 
-    def all(self) -> List[Instructor]:
+    def all(self) -> Dict[str, Instructor]:
+        # Return all the instructors
         cursor: Cursor = self.__conn.cursor()
         cursor.execute("SELECT cwid, name, department FROM instructor "
                        "ORDER BY cwid;")
 
         rows: List[Row] = cursor.fetchall()
+        instructors: Dict[str, Instructor] = defaultdict()
+        for row in rows:
+            cwid: str = row[0]
+            name: str = row[1]
+            department: str = row[2]
 
-        return [Instructor(row[0], row[1], row[2]) for row in rows]
+            instructors[cwid] = Instructor(cwid, name, department)
+
+        return instructors
 
     def get(self, by: Optional[GetBy], value: Optional[str]) -> \
             Union[Instructor, List[Instructor]]:
