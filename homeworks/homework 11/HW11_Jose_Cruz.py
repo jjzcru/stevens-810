@@ -78,7 +78,7 @@ class University:
         # Return a list of all the grades in the university
         return self.grades.all()
 
-    def get_majors(self) -> List[Major]:
+    def get_majors(self) -> Dict[str, Major]:
         # Return a list of all the majors
         return self.majors.all()
 
@@ -164,13 +164,15 @@ class University:
 
     def get_major_summary(self) -> List[Tuple[str, List[str], List[str]]]:
         # Calculate the summary for majors
-        return [(
+        majors: Dict[str, Major] = self.get_majors()
+
+        return sorted([(
             m.name,
             sorted([course.name
                     for course in m.get_course(major.GetBy.TYPE, True)]),
             sorted([course.name
                     for course in m.get_course(major.GetBy.TYPE, False)])
-        ) for m in self.get_majors()]
+        ) for k, m in majors.items()], key=lambda m: m[0], reverse=True)
 
     def display_student_summary(self) -> None:
         """Display the summary as a table"""

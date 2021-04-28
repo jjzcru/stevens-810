@@ -94,7 +94,7 @@ class Majors:
 
         self.__conn = conn
 
-    def all(self) -> List[Major]:
+    def all(self) -> Dict[str, Major]:
         # Return all the instructors
         cursor: Cursor = self.__conn.cursor()
         cursor.execute("SELECT id FROM major ORDER BY id;")

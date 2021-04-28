@@ -299,8 +299,9 @@ class UniversityTest(unittest.TestCase):
         repository.display_instructor_summary()
 
     def test_major_summary(self):
-        dir_path: str = "./support"
-        repository: University = University(dir_path)
+        # Test major summary
+        db_path: str = "./db.sqlite"
+        repository: University = University(db_path)
         self.assertEqual(len(repository.get_majors()), 2)
         print('Majors Summary')
         repository.display_major_summary()
