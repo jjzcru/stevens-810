@@ -151,9 +151,6 @@ class University:
                 if len(remaining_elective) == len(elective_courses_set) \
                 else []
 
-            if learner.cwid == '10115':
-                print(learner)
-
             summary.append((
                 learner.cwid,
                 learner.name,
@@ -226,7 +223,7 @@ class University:
                     course,
                     len(self.grades.get(grade.GetBy.COURSE, course))
                 ))
-        return summary
+        return sorted(summary, key=lambda x: x[0], reverse=True)
 
     def display_instructor_summary(self) -> None:
         """Display the summary as a table"""
@@ -239,7 +236,10 @@ class University:
             "Students"
         ]
 
-        for cwid, name, dept, course, students in self.get_instructor_summary():
+        summary: List[Tuple[str, str, str, str, int]] = \
+            self.get_instructor_summary()
+
+        for cwid, name, dept, course, students in summary:
             table.add_row([cwid, name, dept, course, students])
         print(table)
 

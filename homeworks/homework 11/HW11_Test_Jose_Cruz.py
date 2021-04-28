@@ -279,24 +279,25 @@ class UniversityTest(unittest.TestCase):
         repository.display_student_summary()
 
     def test_instructor_summary(self):
-        dir_path: str = "./support"
-        repository: University = University(dir_path)
+        # Test instructor summary
+        db_path: str = "./db.sqlite"
+        repository: University = University(db_path)
         summary: List[Tuple[str, str, str, str, int]] = \
             repository.get_instructor_summary()
         expected: List[Tuple[str, str, str, str, int]] = [
-            ("98765", "Einstein, A", "SFEN", "SSW 540", 3),
-            ("98765", "Einstein, A", "SFEN", "SSW 567", 4),
-            ("98764", "Feynman, R", "SFEN", "CS 501", 1),
-
+            ("98764", "Cohen, R", "SFEN", "CS 546", 2),
+            ("98763", "Rowland, J", "SFEN", "SSW 555", 1),
+            ("98763", "Rowland, J", "SFEN", "SSW 810", 4),
+            ("98762", "Hawking, S", "CS", "CS 501", 1),
+            ("98762", "Hawking, S", "CS", "CS 546", 2),
+            ("98762", "Hawking, S", "CS", "CS 570", 1),
         ]
-        self.assertEqual(len(repository.get_instructors()), 6)
-        self.assertEqual(len(summary), 12)
-        for i in range(len(summary[0:3])):
+        self.assertEqual(len(summary), 6)
+        for i in range(len(summary)):
             self.assertEqual(summary[i], expected[i])
         print('Instructor Summary')
         repository.display_instructor_summary()
 
-    # TODO Complete test
     def test_major_summary(self):
         dir_path: str = "./support"
         repository: University = University(dir_path)
