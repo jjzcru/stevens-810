@@ -104,7 +104,7 @@ class Majors:
 
         self.__majors = records
 
-    def all(self) -> List[Major]:
+    def all(self) -> Dict[str, Major]:
         # Return all the students
         return self.__majors
 
