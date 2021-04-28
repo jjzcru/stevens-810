@@ -5,20 +5,21 @@ import os
 from pathlib import Path
 from typing import List, Dict
 from enum import Enum
+from sqlite3 import Connection, Cursor, Row
 
 grade_value_map: Dict[str, float] = {
-    "A":    4.0,
-    "A-": 	3.75,
-    "B+": 	3.25,
-    "B": 	3.0,
-    "B-": 	2.75,
-    "C+": 	2.25,
-    "C": 	2.0,
-    "C-": 	0,
-    "D+": 	0,
-    "D": 	0,
-    "D-": 	0,
-    "F": 	0
+    "A": 4.0,
+    "A-": 3.75,
+    "B+": 3.25,
+    "B": 3.0,
+    "B-": 2.75,
+    "C+": 2.25,
+    "C": 2.0,
+    "C-": 0,
+    "D+": 0,
+    "D": 0,
+    "D-": 0,
+    "F": 0
 }
 
 
@@ -93,40 +94,50 @@ class Grade:
 
 class Grades:
     # Represents grades repository
-    __slots__ = ["__grades"]
+    __slots__ = ["__grades", "__conn"]
     __grades: List[Grade]
 
-    def __init__(self, grades: List[Grade]) -> None:
-        # Initialize the grade repository
-        # Validate information
-        if not isinstance(grades, List):
-            raise TypeError("grades is not instance of List")
+    def __init__(self, conn: Connection) -> None:
+        # Initialize repository
+        # Type validation
+        if not isinstance(conn, Connection):
+            raise TypeError("connection is not instance of Connection")
 
-        for grade in grades:
-            if not isinstance(grade, Grade):
-                raise TypeError("grade is not instance of Grade")
-
-        self.__grades = grades
+        self.__conn = conn
 
     def all(self) -> List[Grade]:
-        # Return all the grades
-        return self.__grades
+        # Return all the instructors
+        cursor: Cursor = self.__conn.cursor()
+        cursor.execute("SELECT student_cwid, course, grade, instructor_cwid "
+                       "FROM grade ORDER BY student_cwid;")
+
+        rows: List[Row] = cursor.fetchall()
+        return [Grade(row[0], row[1], row[2], row[3]) for row in rows]
 
     def get(self, by: GetBy, value: str) -> List[Grade]:
         # Get grades depending on different criteria
+        query: str = "SELECT student_cwid, course, grade, instructor_cwid " \
+                     "FROM grade "
+        where: str = ""
+
+        if by != GetBy.STUDENT and by != GetBy.INSTRUCTOR \
+                and by != GetBy.COURSE:
+            raise ValueError(f"{by} is not a supported get value")
+
         if by == GetBy.STUDENT:
-            return [grade for grade in self.__grades if
-                    grade.student_id == value]
+            where = f"WHERE student_cwid = '{value}'"
 
         if by == GetBy.INSTRUCTOR:
-            return [grade for grade in self.__grades if
-                    grade.professor_id == value]
+            where = f"WHERE instructor_cwid = '{value}'"
 
         if by == GetBy.COURSE:
-            return [grade for grade in self.__grades if
-                    grade.course == value]
+            where = f"WHERE course = '{value}'"
 
-        raise ValueError(f"{by} is not a supported get value")
+        cursor: Cursor = self.__conn.cursor()
+        cursor.execute(query + where)
+
+        rows: List[Row] = cursor.fetchall()
+        return [Grade(row[0], row[1], row[2], row[3]) for row in rows]
 
     def get_student_gpa(self, cwid: str) -> float:
         # Function that receives an student cwid and return its GPA
@@ -139,49 +150,4 @@ class Grades:
         return sum([
             grade_value_map[grade.grade]
             for grade in grades
-        ])/len(grades)
-
-    @staticmethod
-    def from_file(file_path: str, ignore_header: bool = False) -> List[Grade]:
-        # Get a list of grades from a file
-        grades: List[Grade] = []
-        if type(file_path) != str:
-            raise TypeError("path must be a str")
-
-        # Verifies that the file exist
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"the path {file_path} do not exist")
-
-        if not Path(file_path).is_file():
-            raise ValueError(f"the path {file_path} is not a file")
-
-        line_counter: int = 0
-        try:
-            with open(file_path, "r") as file:
-                for line in file.readlines():
-                    line = line.strip("\n")
-                    line_counter += 1
-
-                    if ignore_header and line_counter == 1:
-                        continue
-
-                    # Skip empty lines
-                    if len(line) == 0:
-                        continue
-
-                    terms: List[str] = line.split("|") if len(line) > 0 else []
-
-                    if len(terms) != 4:
-                        raise ValueError(
-                            f"expect {4} fields but {len(terms)} were found")
-
-                    grades.append(Grade(terms[0], terms[1], terms[2], terms[3]))
-                else:
-                    file.close()
-        except IOError as e:
-            print(f"Error working with the file {file_path} \n{str(e)}")
-        except ValueError as e:
-            raise ValueError(
-                f"Error in file '{file_path}' line {line_counter} \n{str(e)}")
-
-        return grades
+        ]) / len(grades)

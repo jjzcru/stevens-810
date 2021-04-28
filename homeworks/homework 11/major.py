@@ -62,7 +62,7 @@ class Major:
 
     def get_course(self, by: Optional[GetBy], value: Union[str, bool]) -> \
             Union[Course, List[Course]]:
-        # Get instructor/s information depending on different criteria
+        # Get majors/s information depending on different criteria
         # Search a instructor by id
         if by == GetBy.NAME:
             for course in self.courses:
