@@ -47,6 +47,7 @@ class University:
         self.instructors = Instructors(self.conn)
         self.students = Students(self.conn)
         self.majors = Majors(self.conn)
+        self.grades = Grades(self.conn)
 
     def get_connection(self, db_path: str):
         # Get database connection
@@ -104,7 +105,8 @@ class University:
         for learner in self.get_students():
             courses: List[str] = [item.course for item in
                                   self.grades.get(grade.GetBy.STUDENT,
-                                                  learner.cwid)]
+                                                  learner.cwid)
+                                  if item.passed]
 
             gpa: float = self.grades.get_student_gpa(learner.cwid)
             # Get a list of all the courses from the major
@@ -148,6 +150,9 @@ class University:
             remaining_elective_courses: List[str] = list(remaining_elective) \
                 if len(remaining_elective) == len(elective_courses_set) \
                 else []
+
+            if learner.cwid == '10115':
+                print(learner)
 
             summary.append((
                 learner.cwid,

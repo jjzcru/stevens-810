@@ -118,9 +118,14 @@ class Majors:
         return [Course(row[0], row[1] == "R") for row in rows]
 
     def get(self, name: str) -> Major:
-        # Get a major by its name
-        major: Optional[Major] = self.__majors.get(name)
-        if major is None:
-            raise ValueError(f"major with name {name} do not exist")
+        # Return all the instructors
+        cursor: Cursor = self.__conn.cursor()
+        cursor.execute(f"SELECT id FROM major WHERE id = '{name}' LIMIT 1;")
 
-        return major
+        rows: List[Row] = cursor.fetchall()
+        if len(rows) == 0:
+            raise ValueError(f"major with name '{name}' do not exist")
+
+        courses: List[Course] = self.get_courses(name)
+
+        return Major(name, courses)

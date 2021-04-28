@@ -1,8 +1,6 @@
 """
     Handles everything related to university grades
 """
-import os
-from pathlib import Path
 from typing import List, Dict
 from enum import Enum
 from sqlite3 import Connection, Cursor, Row
@@ -32,7 +30,7 @@ class GetBy(Enum):
 
 class Grade:
     # Represents grade  object
-    __slots__ = ["student_id", "course", "grade", "professor_id"]
+    __slots__ = ["student_id", "course", "grade", "professor_id", "passed"]
 
     def __init__(self, student_id: str, course: str, grade: str,
                  professor_id: str) -> None:
@@ -42,6 +40,7 @@ class Grade:
         self.course = course
         self.professor_id = professor_id
         self.__validate()
+        self.passed = grade_value_map[grade] > 0
 
     def __validate(self):
         # Validate input information

@@ -253,12 +253,12 @@ class GradesTest(unittest.TestCase):
         self.assertEqual(len(grades), 4)
         conn.close()
 
+
 class UniversityTest(unittest.TestCase):
     """Test suite for University"""
 
     def test_init(self) -> None:
         # Test repository functionalities
-        non_dir_path: str = "./support/instructors.txt"
         non_existing_dir_path: str = "./test"
 
         with self.assertRaises(TypeError):
@@ -267,25 +267,14 @@ class UniversityTest(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             University(non_existing_dir_path)
 
-        with self.assertRaises(ValueError):
-            University(non_dir_path)
-
     def test_student_summary(self):
-        dir_path: str = "./support"
-        repository: University = University(dir_path)
-        self.assertEqual(len(repository.get_students()), 10)
+        # Test student summary
+        db_path: str = "./db.sqlite"
+        repository: University = University(db_path)
+        self.assertEqual(len(repository.get_students()), 4)
         summary: List[Tuple[str, str, List[str]]] = \
             repository.get_student_summary()
-        self.assertEqual(len(summary), 10)
-        # TODO Fix this validation
-        """expected: List[Tuple[str, str, List[str]]] = [
-            ("10103", "Baldwin, C", ["CS 501", "SSW 564", "SSW 567",
-                                     "SSW 687"]),
-            ("10115", "Wyatt, X", ["CS 545", "SSW 564", "SSW 567", "SSW 687"]),
-            ("10172", "Forbes, I", ["SSW 555", "SSW 567"])
-        ]
-        for i in range(len(summary[0:3])):
-            self.assertEqual(summary[i], expected[i])"""
+        self.assertEqual(len(summary), 4)
         print('Student Summary')
         repository.display_student_summary()
 
