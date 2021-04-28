@@ -1,4 +1,4 @@
-"""HW05: University Repository
+""" HW11: University Repository
 
     CONVENTIONS:
     - Max character limit per line 80
@@ -11,6 +11,8 @@
 """
 import unittest
 from typing import List, Tuple
+import sqlite3
+from sqlite3 import Error, Connection
 import instructor
 from instructor import Instructors, Instructor
 import student
@@ -20,6 +22,78 @@ from grade import Grades, Grade
 import major
 from major import Major, Majors, Course
 from HW11_Jose_Cruz import University
+
+
+class InstructorsTest(unittest.TestCase):
+    """Test suite for Instructor"""
+
+    def test_from_file(self) -> None:
+        # Test getting a list of student from file
+        db_path: str = "./db.sqlite"
+
+        with self.assertRaises(TypeError):
+            Instructors(0)
+
+        with self.assertRaises(TypeError):
+            Instructors(db_path)
+
+        conn: Connection = sqlite3.connect(db_path)
+
+        Instructors(conn)
+        conn.close()
+
+    def test_get_all(self) -> None:
+        # Test repository functionalities
+        db_path: str = "./db.sqlite"
+        conn: Connection = sqlite3.connect(db_path)
+
+        repository: Instructors = Instructors(conn)
+        instructors: List[Instructor] = repository.all()
+        self.assertEqual(len(instructors), 3)
+        expected_result: List[Instructor] = [
+            Instructor("98762", "Hawking, S", "CS"),
+            Instructor("98763", "Rowland, J", "SFEN"),
+            Instructor("98764", "Cohen, R", "SFEN"),
+        ]
+        for i in range(len(instructors)):
+            self.assertEqual(instructors[i].cwid, expected_result[i].cwid)
+            self.assertEqual(instructors[i].name, expected_result[i].name)
+            self.assertEqual(instructors[i].department,
+                             expected_result[i].department)
+        conn.close()
+
+    def test_get_by_id(self) -> None:
+        # Test get instructor by id
+        db_path: str = "./db.sqlite"
+        conn: Connection = sqlite3.connect(db_path)
+
+        repository: Instructors = Instructors(conn)
+        with self.assertRaises(ValueError):
+            repository.get(instructor.GetBy.ID, "fff")
+
+        teacher: Instructor = repository.get(instructor.GetBy.ID, "98762")
+        self.assertEqual(teacher.cwid, "98762")
+        self.assertEqual(teacher.name, "Hawking, S")
+        self.assertEqual(teacher.department, "CS")
+        conn.close()
+
+    def test_get_by_department(self) -> None:
+        # Test get instructor by department
+        db_path: str = "./db.sqlite"
+        conn: Connection = sqlite3.connect(db_path)
+
+        repository: Instructors = Instructors(conn)
+        instructors: List[Instructor] = \
+            repository.get(instructor.GetBy.DEPARTMENT, "CS")
+
+        self.assertEqual(len(instructors), 1)
+
+        self.assertEqual(instructors[0].cwid, "98762")
+        self.assertEqual(instructors[0].name, "Hawking, S")
+        self.assertEqual(instructors[0].department, "CS")
+        conn.close()
+
+
 
 
 class StudentsTest(unittest.TestCase):
@@ -78,68 +152,6 @@ class StudentsTest(unittest.TestCase):
         self.assertEqual(len(repository.get(student.GetBy.MAJOR, "SYEN")), 5)
         with self.assertRaises(ValueError):
             repository.get(student.GetBy.ID, "TEST")
-
-
-class InstructorsTest(unittest.TestCase):
-    """Test suite for Instructor"""
-
-    def test_from_file(self) -> None:
-        # Test getting a list of student from file
-        non_existing_file_path: str = "./test"
-        dir_path: str = "./support"
-        file_path: str = "./support/instructors.txt"
-
-        with self.assertRaises(TypeError):
-            Instructors.from_file(0)
-
-        with self.assertRaises(FileNotFoundError):
-            Instructors.from_file(non_existing_file_path)
-
-        with self.assertRaises(ValueError):
-            Instructors.from_file(dir_path)
-
-        instructors: List[Instructor] = \
-            Instructors.from_file(file_path, True)
-
-        self.assertEqual(len(instructors), 6)
-        expected_result: List[Instructor] = [
-            Instructor("98765", "Einstein, A", "SFEN"),
-            Instructor("98764", "Feynman, R", "SFEN"),
-            Instructor("98763", "Newton, I", "SFEN"),
-            Instructor("98762", "Hawking, S", "SYEN"),
-            Instructor("98761", "Edison, A", "SYEN"),
-            Instructor("98760", "Darwin, C", "SYEN"),
-
-        ]
-        for i in range(len(instructors)):
-            self.assertEqual(instructors[i].cwid, expected_result[i].cwid)
-            self.assertEqual(instructors[i].name, expected_result[i].name)
-            self.assertEqual(instructors[i].department,
-                             expected_result[i].department)
-
-    def test_repository(self) -> None:
-        # Test repository functionalities
-        file_path: str = "./support/instructors.txt"
-
-        instructors: List[Instructor] = \
-            Instructors.from_file(file_path, True)
-        repository: Instructors = Instructors(instructors)
-
-        self.assertEqual(len(repository.all()), 6)
-        expected_instructor: Instructor = Instructor("98765",
-                                                     "Einstein, A", "SFEN")
-
-        teacher: Instructor = repository.get(instructor.GetBy.ID, "98765")
-        self.assertEqual(expected_instructor.cwid, teacher.cwid)
-        self.assertEqual(expected_instructor.name, teacher.name)
-        self.assertEqual(expected_instructor.department,
-                         teacher.department)
-        self.assertEqual(len(
-            repository.get(instructor.GetBy.DEPARTMENT, "SFEN")), 3)
-        self.assertEqual(len(
-            repository.get(instructor.GetBy.DEPARTMENT, "SYEN")), 3)
-        with self.assertRaises(ValueError):
-            repository.get(instructor.GetBy.ID, "TEST")
 
 
 class GradesTest(unittest.TestCase):

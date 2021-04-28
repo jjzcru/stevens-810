@@ -12,8 +12,10 @@
 import os
 from pathlib import Path
 from collections import defaultdict
-from typing import List, Dict, Tuple, Set, Union
+from typing import List, Dict, Tuple, Set, Union, Optional
 from prettytable import PrettyTable
+import sqlite3
+from sqlite3 import Error, Connection
 import instructor
 from instructor import Instructors, Instructor
 import student
@@ -26,87 +28,40 @@ from major import Majors, Major, Course
 
 class University:
     # Handles the university repository functionality
+    conn: Optional[Connection] = None
 
-    def __init__(self, directory: str) -> None:
+    def __init__(self, db_path: str) -> None:
         # Initialize university repository
-        if type(directory) != str:
+        if type(db_path) != str:
             raise TypeError("Value must be a str")
 
         # Verifies that the file exist
-        if not os.path.exists(directory):
-            raise FileNotFoundError(f"the path {directory} do not exist")
+        if not os.path.exists(db_path):
+            raise FileNotFoundError(f"the path {db_path} do not exist")
 
-        path: Path = Path(directory)
-        if path.is_file():
-            raise ValueError(f"the path {directory} is a file")
+        path: Path = Path(db_path)
+        if not path.is_file():
+            raise ValueError(f"the path {db_path} is not a file")
 
-        self.directory = directory
-        self.__validate_files()
+        self.conn = self.get_connection(db_path)
+        self.instructors = Instructors(self.conn)
 
-        ignore_headers: bool = True
+    def get_connection(self, db_path: str):
+        # Get database connection
+        self.conn: Optional[Connection] = None
 
-        instructors: List[Instructor] = Instructors.from_file(
-            self.instructors_path, ignore_headers)
-        students: List[Student] = Students.from_file(self.student_path,
-                                                     ignore_headers)
-        grades: List[Grade] = Grades.from_file(self.grades_path,
-                                               ignore_headers)
-        majors: List[Major] = Majors.from_file(self.majors_path,
-                                               ignore_headers)
+        try:
+            return sqlite3.connect(db_path)
+        except Error as e:
+            print("Error opening the database")
+            print(e)
+            raise e
 
-        self.instructors: Instructors = Instructors(instructors)
-        self.students: Students = Students(students)
-        self.grades: Grades = Grades(grades)
-        self.majors: Majors = Majors(majors)
-        self.__validate_data_integrity()
-
-    def __validate_files(self) -> None:
-        # Validates that the required files exist and add them to self
-        students: str = os.path.join(self.directory, "students.txt")
-        instructors: str = os.path.join(self.directory, "instructors.txt")
-        grades: str = os.path.join(self.directory, "grades.txt")
-        majors: str = os.path.join(self.directory, "majors.txt")
-
-        # Validate path exists
-        if not os.path.exists(students):
-            raise FileNotFoundError(f"the path {students} do not exist")
-
-        if not os.path.exists(instructors):
-            raise FileNotFoundError(f"the path {instructors} do not exist")
-
-        if not os.path.exists(grades):
-            raise FileNotFoundError(f"the path {grades} do not exist")
-
-        if not os.path.exists(majors):
-            raise FileNotFoundError(f"the path {majors} do not exist")
-
-        # Validates the path are files
-        student_path: Path = Path(students)
-        instructors_path: Path = Path(instructors)
-        grades_path: Path = Path(grades)
-        majors_path: Path = Path(majors)
-        if not student_path.is_file():
-            raise IsADirectoryError(f"the path {students} is a directory")
-
-        if not instructors_path.is_file():
-            raise IsADirectoryError(f"the path {instructors} is a directory")
-
-        if not grades_path.is_file():
-            raise IsADirectoryError(f"the path {grades} is a directory")
-
-        if not majors_path.is_file():
-            raise IsADirectoryError(f"the path {majors_path} is a directory")
-
-        self.student_path = students
-        self.instructors_path = instructors
-        self.grades_path = grades
-        self.majors_path = majors
-
-    def __validate_data_integrity(self) -> None:
-        """Validate that all the professor and student reference exists"""
-        for item in self.grades.all():
-            self.instructors.get(instructor.GetBy.ID, item.professor_id)
-            self.students.get(student.GetBy.ID, item.student_id)
+    def __del__(self):
+        # Gets called when the object is destructed
+        # Cleans the database connection if exist
+        if self.conn is not None:
+            self.conn.close()
 
     def get_instructors(self) -> List[Instructor]:
         # Return a list of all the instructors in the university
