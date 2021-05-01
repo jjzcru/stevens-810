@@ -1,0 +1,27 @@
+{%extends "base.html"%} {% block content%}
+<div class="container">
+  <table style="width: 100%">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>CWID</th>
+        <th>Course</th>
+        <th>Grade</th>
+        <th>Instructor</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{row[0]}}</td>
+        <td>{{row[1]}}</td>
+        <td>{{row[2]}}</td>
+        <td>{{row[3]}}</td>
+        <td>{{row[4]}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
