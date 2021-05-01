@@ -26,7 +26,7 @@ def home() -> str:
     rows = get_student_grade_summary('./db.sqlite')
     return render_template('home.html', 
         title='Stevens Repository',
-        rows=rows + rows)
+        rows=rows)
 
 
 app.run(debug=True, port=4000)
