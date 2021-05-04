@@ -1,103 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>{{title}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
+<head>
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com"/>
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-      rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+            rel="stylesheet"
     />
     <style>
-      html,
-      body {
-        display: flex;
-        justify-content: flex-start;
-        align-items: flex-start;
-        flex-direction: column;
-        height: 100%;
-        width: 100%;
-        background: #a32638;
-        font-family: 'Inter', sans-serif;
-        padding-left: 16px;
-        overflow: hidden;
-      }
-      h1 {
-        color: #fff;
-        font-weight: 600;
-      }
-      .title {
-        min-width: 600px;
-      }
-      .container {
-        border-radius: 8px;
-        overflow: hidden;
-        background: #a32638;
-        box-shadow: 16px 16px 32px #8f2131, -16px -16px 32px #b72b3f;
-      }
-      table {
-        border-collapse: collapse;
-        border-spacing: 0;
-        empty-cells: show;
-        min-width: 500px;
-        max-width: 600px;
-        max-height: 500px;
-        overflow-x: hidden;
-        overflow-y: auto;
-      }
-      td,
-      th {
-        padding: 0.5em 1em;
-        border-bottom-width: 0;
-        border-right-width: 0;
-        border-top-width: 0;
-        font-size: inherit;
-        margin: 0;
-        overflow: visible;
-      }
+        html,
+        body {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            background: #a32638;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
 
-      thead {
-        background: #fff;
-        color: #a32638;
-        text-align: left;
-        vertical-align: bottom;
-        font-weight: 600;
-        border-bottom: 1px solid #eaeaea;
-      }
+        h1 {
+            color: #fff;
+            font-weight: 600;
+        }
 
-      tbody {
-        font-weight: 400;
-        overflow: auto;
-        font-size: 1rem;
-      }
+        .title {
+            min-width: 600px;
+            text-align: center;
+        }
 
-      tbody > tr {
-        color: #eaeaea;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: background ease-out 200ms, font-weight ease-out 200ms;
-      }
+        .container {
+            border-radius: 8px;
+            overflow: hidden;
+            background: #a32638;
+            box-shadow: 16px 16px 32px #8f2131, -16px -16px 32px #b72b3f;
+        }
 
-      tbody > tr:hover {
-        background: #a54d5a;
-        color: #fff;
-      }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            empty-cells: show;
+            min-width: 500px;
+            max-width: 600px;
+            max-height: 500px;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
 
-      table tbody {
-        display: block;
-        max-height: 300px;
-        overflow-y: scroll;
-      }
+        td,
+        th {
+            padding: 0.5em 1em;
+            border-bottom-width: 0;
+            border-right-width: 0;
+            border-top-width: 0;
+            font-size: inherit;
+            margin: 0;
+            overflow: visible;
+        }
 
-      table thead,
-      table tbody tr {
-        display: table;
-        width: 100%;
-        table-layout: fixed;
-      }
+        thead {
+            background: #fff;
+            color: #a32638;
+            text-align: left;
+            vertical-align: bottom;
+            font-weight: 600;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        tbody {
+            font-weight: 400;
+            overflow: auto;
+            font-size: 1rem;
+        }
+
+        tbody > tr {
+            color: #eaeaea;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background ease-out 200ms, font-weight ease-out 200ms;
+        }
+
+        tbody > tr:hover {
+            background: #a54d5a;
+            color: #fff;
+        }
+
+        table tbody {
+            display: block;
+            max-height: 300px;
+            overflow-y: scroll;
+        }
+
+        table thead,
+        table tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .error {
+            border-radius: 8px;
+            overflow: hidden;
+            min-width: 300px;
+            width: 80vw;
+            max-width: 400px;
+            min-height: 300px;
+            background: #a32638;
+            box-shadow: 16px 16px 32px #8f2131, -16px -16px 32px #b72b3f;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .error > .title {
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            color: #a32638;
+            width: 100%;
+            min-width: 100%;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .error > .content {
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100% - 40px);
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .error > .content > p::first-letter {
+            text-transform: uppercase;
+        }
     </style>
-  </head>
-  <body>
-    {% block content %} {% endblock %}
-  </body>
+</head>
+<body>
+{% block content %} {% endblock %}
+</body>
 </html>
